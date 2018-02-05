@@ -200,7 +200,7 @@
 
 \begin{frame}[fragile]{Bináris fa implementációja}
 	\begin{columns}
-		\begin{column}{.5\textwidth}
+		\begin{column}{.7\textwidth}
 			\begin{lstlisting}[language=c++]
 class Node {
     Object kulcs;
@@ -209,9 +209,13 @@ class Node {
     Node* jobb;
 }
 			\end{lstlisting}
+			\vskip 1em
+			\begin{block}<2>{Megjegyzés}
+				2 mutatóval és egy segédbittel (bal fiú-e az adott csúcs) is megvalósítható lenne
+			\end{block}
 		\end{column}
 		
-		\begin{column}{.5\textwidth}
+		\begin{column}{.4\textwidth}
 		\begin{figure}
 		\centering
 \begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
