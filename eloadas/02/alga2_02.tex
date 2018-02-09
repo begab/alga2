@@ -8,7 +8,60 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor}
 \usepackage{listings}
+\usepackage{lstlinebgrd}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+
+
 \usepackage{hyperref}
 \hypersetup{
     colorlinks = true,
@@ -22,22 +75,10 @@
 \usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
 \usetikzlibrary{calc,chains,arrows,positioning}
 \tikzset{
-    box/.style={draw, fill=pink!10, minimum width=5em, 
-    text centered, minimum height=2.5em},
-    squarecross/.style={
-        draw, rectangle,minimum size=12pt, fill=orange!80,
-        inner sep=0pt, text=black,
-        path picture = {
-            \draw[black]
-            (path picture bounding box.north west) --
-            (path picture bounding box.south east)
-            (path picture bounding box.south west) --
-            (path picture bounding box.north east);
-        }
-    },
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
   treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
   arn_n/.style = {treenode, circle, white, font=\sffamily\bfseries, draw=black, fill=black, text width=1.5em},
-  arn_r/.style = {treenode, circle, red, draw=red, text width=1.5em, very thick}
+  arn_r/.style = {treenode, circle, red, draw=red, text width=1.5em, very thick},
   rendmint/.style = {rectangle split,rectangle split parts=2,draw,text centered},
   int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
   subtree/.style={isosceles triangle, draw=black, align=center, minimum height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north}
@@ -50,167 +91,63 @@
 \logo{\pgfuseimage{institution-logo}}
 
 \title{Algoritmusok és adatszerkezetek II.}
-\subtitle{Bináris keresőfák és műveleteik}
+\subtitle{Augmentált keresőfák}
 \date{}
 
 \begin{document}
 
 \maketitle
 
-\begin{frame}{Gyakorlati követelmények}
+\begin{frame}{Bináris keresőfák műveletei}
 	\begin{itemize}
-		\item 2 db ZH (ápr.~9. és máj.~7.): 40-40 pont (min.~18 pont/ZH)
-		\item Kvízek: 4 darab 5-5 pontos Coospace kvíz (min.~0 pont)
-		\item Pluszpontok (minimumba nem számítanak bele)
-		\item Javítás: a nagy ZH-k bármelyike javítható az utolsó előadáson
-	\end{itemize}
-	\pause
-	\begin{table}
-	\centering
-	\begin{tabular}{r@{}r@{ }l|l}
-		\multicolumn{4}{c}{Gyakorlati jegy} \\ \hline
-		{[}&0--51)  & pont & elégtelen (1) \\
-		{[}&51--66) & pont & elégséges (2) \\
-		{[}&66--76) & pont & közepes (3) \\
-		{[}&76--86) & pont & jó (4) \\
-		{[}&86--$\infty$) & pont & jeles (5)
-	\end{tabular}
-    \end{table}
-\end{frame}
-
-\begin{frame}{Gyakorlati követelmények -- Coospace kvízek}
-	\begin{itemize}
-		\item Coospace-en az előadás színterében lesznek közzétéve (de a gyakorlati teljesítés részét képezik)
-		\item Közzététel: \textcolor{red}{febr.~26., márc.~19}, \textcolor{blue}{ápr.~16, ápr.~30}
-		\item Beadási határidő: \textcolor{red}{ápr.~9}, \textcolor{blue}{máj.~14} az előadás kezdetéig
-		\item 3 kitöltés/kvíz, amelyek közül a legjobbat vesszük figyelembe
-		\pause
-		\item Tesztenként a 10 leggyorsabb hibátlan kitöltőnek pluszpont jár
+		\item $h$ magas és $n$ csúcsból álló bináris keresőfa esetén
+		a {\scshape Keres}, {\scshape Beszúr}, {\scshape Töröl} műveletek $O(h)$ időben végrehajthatók
+		\item $x$ csúcs rangja: a fában tárolt kulcsok között $x$ hanyadik helyen áll $<$ szerint
+		\item Hogy keresnénk meg egy bináris keresőfa $r$ rangú elemét?
+		\item Hogyan határoznánk meg egy bináris keresőfa $x$ csúcsának rangját?
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Követelmények -- kollokvium}
+\begin{frame}{Új műveletek -- adott rangú kulcs meghatározása}
 	\begin{itemize}
-		\item A gyakorlat sikeres teljesítése esetén kollokvium tehető
-		\item 10 db 5 pontos elméleti és gyakorlati kiskérdéssel
-		\item Pluszpontok (minimumba nem számítanak bele)
-		\item Elővizsga az utolsó előadáson (vizsgaalkalomnak számít)
-	\end{itemize}
-	\pause	
-		\begin{table}
-		\centering
-		\begin{tabular}{r@{}r@{ }l|l}
-			\multicolumn{4}{c}{Kollokviumi jegy} \\ \hline
-			{[}&0--25)  & pont & elégtelen (1) \\
-			{[}&26--32) & pont & elégséges (2) \\
-			{[}&32--38) & pont & közepes (3) \\
-			{[}&38--44) & pont & jó (4) \\
-			{[}&44--$\infty$) & pont & jeles (5)
-		\end{tabular}
-	    \end{table}
-\end{frame}
-
-\begin{frame}{A félév során érintett főbb témakörök}
-	\begin{itemize}
-		\item Kiegyensúlyozott és augmentált keresőfák
-		\item Binomiális és Fibonacci kupacok
-		\item Geometriai algoritmusok
-		\item Számelméleti algoritmusok
-		\item Mintaillesztő algoritmusok
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Hasznos források}
-	\begin{itemize}
-		\item Ajánlott irodalom
+		\item Cél: $r \leq n$ ranggal rendelkező elem megtalálása a fában
+		\item Naiv elgondolás: elkezdem bejárni a fát $<$ szerinti sorrendben, és megállok az $r$-ediknek érintett csúcsnál
+		\item<2> $O(h)$ helyett $\Theta(r)$ idejű algoritmus
 		\begin{itemize}
-			\item Thomas H. Cormen -- Charles E. Leiserson -- Ronald L. Rivest -- Clifford Stein: \textbf{Új algoritmusok}.  Kiadó: SCOLAR
+			\item Kiegyensúlyozott fa és kellően nagy $r$ estében pedig $r \gg h$
 		\end{itemize}
 	\end{itemize}
+\end{frame}
+		
+\begin{frame}{Új műveletek -- adott kulcs rangjának meghatározása}
 	\begin{itemize}
-		\item \href{https://www.hackerrank.com/contests}{Hackerrank versenyek}
-		\item \href{https://www.cs.usfca.edu/~galles/visualization/}{Algoritmusok vizualizációja}
+		\item Naiv elgondolás: elkezdem bejárni a fát $<$ szerinti sorrendben, és megállok, ha $x$ kulcsot érintem
+		\item A válasz a bejárás során érintett kulcsok száma lesz
+		\item $O(h)$ helyett $O(n)$ idejű algoritmus
 	\end{itemize}
-\end{frame}
-
-\begin{frame}{Ismétlés --- Aszimptotikus jelölések: $\Omega$}
-\begin{figure}
-	\centering
-	\includegraphics{Omega_fn}
-\end{figure}
-	\url{https://www.desmos.com/calculator/t8paytwq1w}
-\end{frame}
-
-\begin{frame}{Ismétlés --- Aszimptotikus jelölések: $\Theta$}
-\begin{figure}
-	\centering
-	\includegraphics{Theta_fn}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Ismétlés --- Aszimptotikus jelölések: $O$}
-\begin{figure}
-	\centering
-	\includegraphics{O_fn}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Ismétlés -- Aszimptotikus jelölések}
-	\begin{alertblock}{\only<2>{(beugratós)} Kérdés}	
-		Hatékony-e az az algoritmus, amelyik futási ideje $n$ méretű inputra \textit{legalább} $O(n \log n)$? \\
-		\only<2>{Másképp szólva, mit tudunk arról az algoritmusról, amelynek futási ideje $\Omega(1)$?}
+	\begin{alertblock}<2>{A megoldás}
+Minden csúcs tároljon el kiegészítő információt magáról!
 	\end{alertblock}
 \end{frame}
 
-\begin{frame}{Bináris fa implementációja}
-	\begin{itemize}
-		\item Egy olyan ''megengedő'' kétszeresen láncolt lista, ahol az elemek (egy helyett) két elemhez is kapcsolódhatnak
-	\end{itemize}
-	
-	\begin{block}{Láncolt lista}
-		\begin{tikzpicture}[
-		        list/.style={
-		            very thick, rectangle split,
-		            rectangle split parts=3, draw,
-		            rectangle split horizontal, minimum size=18pt,
-		            inner sep=5pt, text=black,
-		            rectangle split part fill={blue!20, red!20, blue!20}
-		        },
-		        ->, start chain, very thick
-		      ]
-		
-		  \node[list,on chain] (A) {\nodepart{second} 20};
-		  \node[list,on chain] (B) {\nodepart{second} 55};
-		  \node[list,on chain] (C) {\nodepart{second} 84};
-		
-		  \node[squarecross]   (D) [right=of C] {};
-		  \node[squarecross]   (E) [left= of A] {};
-		
-		  \path[*->] let \p1 = (A.three), \p2 = (A.center) in (\x1,\y2) edge [bend left] ($(B.one)+(0,0.2)$);
-		  \path[*->] let \p1 = (B.three), \p2 = (B.center) in (\x1,\y2) edge [bend left] ($(C.one)+(0,0.2)$);
-		  \draw[*->] let \p1 = (C.three), \p2 = (C.center) in (\x1,\y2) -- (D);
-		
-		  \draw[*->] ($(A.one)+(0.2,0.1)$) -- (E);
-		  \path[*->] ($(B.one)+(0.1,0.1)$) edge [bend left] ($(A.three)+(0,-0.05)$);
-		  \path[*->] ($(C.one)+(0.1,0.1)$) edge [bend left] ($(B.three)+(0,-0.05)$);
-		\end{tikzpicture}
-	\end{block}
-\end{frame}
-
-\begin{frame}[fragile]{Bináris fa implementációja}
+\begin{frame}[fragile]{Rendezett-minta fa implementációja}
 	\begin{columns}
 		\begin{column}{.7\textwidth}
-			\begin{lstlisting}[language=c++]
+\begin{lstlisting}[
+  linebackgroundcolor={%
+    \btLstHL<1>{3}
+  }]
 class Node {
     Object kulcs;
+    int kiegeszito;    
     Node* apa;
     Node* bal;
     Node* jobb;
 }
-			\end{lstlisting}
+\end{lstlisting}
 			\vskip 1em
 			\begin{block}<2>{Megjegyzés}
-				2 mutatóval és egy segédbittel (bal fiú-e az adott csúcs) is megvalósítható lenne
+				Az extra adattag az új műveletek hatékony (azaz $O(h)$ idejű) implementációját segítik
 			\end{block}
 		\end{column}
 		
@@ -219,9 +156,10 @@ class Node {
 		\centering
 \begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
     \node (A) [box,minimum width=6em] {kulcs};
+    \node (H) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) {kiegeszito};
     \node (D) [box,anchor=south,minimum width=6em] at (A.north) {apa};
-    \node (B) [box,anchor=north west,minimum width=3em] at (A.south west) {bal};
-    \node (C) [box,anchor=north east,minimum width=3em] at (A.south east) {jobb};
+    \node (B) [box,anchor=north west,minimum width=3em] at (H.south west) {bal};
+    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) {jobb};
     \coordinate (E) at (0,2);
     \coordinate (E) at (0,2);
     \node[below left = 1cm of B] (F) {};
