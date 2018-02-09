@@ -33,7 +33,6 @@
   }
 }
 \usepackage{wasysym}
-\usepackage{flafter}
 \date{}
 \title{2. gyakorlat -- Kibővített keresőfák}
 \begin{document}
@@ -46,21 +45,21 @@ Emlékeztető: a rendezettminta-fa olyan bináris keresőfa, amely minden $p$ gy
 \begin{figure}[!h]
 \centering
   \begin{tikzpicture}[level/.style={sibling distance = 9cm/#1},level distance = 1.cm]
-    \node[data]{\mercury \nodepart{two} }
-        child{ node[data]{\mars \nodepart{two}}
-    	    child{ node[data]{\earth \nodepart{two}}}
-            child{ node[data]{\aquarius \nodepart{two}}
-                child{ node[data]{\gemini \nodepart{two}}
-                       child{ node[data]{\rightmoon \nodepart{two}}}
+    \node[data]{\aries \nodepart{two} }
+        child{ node[data]{\taurus \nodepart{two}}
+    	    child{ node[data]{\gemini \nodepart{two}}}
+            child{ node[data]{\cancer \nodepart{two}}
+                child{ node[data]{\leo \nodepart{two}}
+                       child{ node[data]{\virgo \nodepart{two}}}
                        child[missing]                    
                 }
-                child{ node[data]{\saturn \nodepart{two}}}
+                child{ node[data]{\libra \nodepart{two}}}
             }
         }
-        child{ node[data]{\pisces \nodepart{two}}
-            child{ node[data]{\leftmoon \nodepart{two}}}
-            child{ node[data]{\mercury \nodepart{two}}
-                child{ node[data]{\rightmoon \nodepart{two}}}
+        child{ node[data]{\scorpio \nodepart{two}}
+            child{ node[data]{\sagittarius \nodepart{two}}}
+            child{ node[data]{\capricornus \nodepart{two}}
+                child{ node[data]{\aquarius \nodepart{two}}}
                 child[missing]
             }
         };
@@ -78,45 +77,45 @@ Megjegyzés: a valóságban persze nem ''utólag'', fabejárást használva hat�
 \begin{itemize}
 \item 6 rangú elemet
 \begin{alltt}
-RangKeres(\mercury, 6)
-RangKeres(\mars, 6)
-RangKeres(\aquarius, 4)
-RangKeres(\saturn, 1)
+RangKeres(\aries, 6)
+RangKeres(\taurus, 6)
+RangKeres(\cancer, 4)
+RangKeres(\libra, 1)
 \end{alltt}
 
 \item 9 rangú elemet
 \begin{alltt}
-RangKeres(\mercury, 9)
-RangKeres(\pisces, 2)
+RangKeres(\aries, 9)
+RangKeres(\scorpio, 2)
 \end{alltt}
 \end{itemize}
 
-\noindent d) A kiegészítő információk alapján mi lesz $\aquarius$ rangja?\\
-Megjegyzés: $r_{x}(\aquarius)$ az $\aquarius$ szimbólum rangjára vonatkozó aktuális ismereteinket jelöli abban a pillanatban, amikor az algoritmus az $x$ jelű csúcs feldolgozásánál tart. \\
-$r_{\aquarius}(\aquarius)=1+2$\\
-$r_{\mars}(\aquarius)=r_{\aquarius}(\aquarius)+1+1$\\
-$r_{\mercury}(\aquarius)=r_{\saturn}(\aquarius)+0=5$\\
+\noindent d) A kiegészítő információk alapján mi lesz $\cancer$ rangja?\\
+Megjegyzés: $r_{x}(\cancer)$ az $\cancer$ szimbólum rangjára vonatkozó aktuális ismereteinket jelöli abban a pillanatban, amikor az algoritmus az $x$ jelű csúcs feldolgozásánál tart. \\
+$r_{\cancer}(\cancer)=1+2$\\
+$r_{\taurus}(\cancer)=r_{\cancer}(\cancer)+1+1$\\
+$r_{\aries}(\cancer)=r_{\taurus}(\cancer)+0=5$\\
 
-\noindent e) Hajstuk végre a {\scshape Beszúr(\sun)}, illetve a {\scshape Töröl(\pisces)} műveleteket, amennyiben tudjuk, hogy a $\sun < \pisces$, illetve a $\sun > \leftmoon$ relációk teljesülnek!
+\noindent e) Hajstuk végre a {\scshape Beszúr(\pisces)}, illetve a {\scshape Töröl(\scorpio)} műveleteket, amennyiben tudjuk, hogy a $\pisces < \scorpio$, illetve a $\pisces > \sagittarius$ relációk teljesülnek!
 
 \begin{figure}[!h]
 \centering
   \begin{tikzpicture}[level/.style={sibling distance = 8cm/#1},level distance = .9cm]
-    \node[data]{\mercury \nodepart{two}11}
-        child{ node[data]{\mars \nodepart{two}6}
-    	    child{ node[data]{\earth \nodepart{two}1}}
-            child{ node[data]{\aquarius \nodepart{two}4}
-                child{ node[data]{\gemini \nodepart{two}2}
-                       child{ node[data]{\rightmoon \nodepart{two}1}}
+    \node[data]{\aries \nodepart{two}11}
+        child{ node[data]{\taurus \nodepart{two}6}
+    	    child{ node[data]{\gemini \nodepart{two}1}}
+            child{ node[data]{\cancer \nodepart{two}4}
+                child{ node[data]{\leo \nodepart{two}2}
+                       child{ node[data]{\virgo \nodepart{two}1}}
                        child[missing]                    
                 }
-                child{ node[data]{\saturn \nodepart{two}1}}
+                child{ node[data]{\libra \nodepart{two}1}}
             }
         }
-        child{ node[data]{\sun \nodepart{two}4}
-            child{ node[data]{\leftmoon \nodepart{two}1}}
-            child{ node[data]{\mercury \nodepart{two}2}
-                child{ node[data]{\rightmoon \nodepart{two}1}}
+        child{ node[data]{\pisces \nodepart{two}4}
+            child{ node[data]{\sagittarius \nodepart{two}1}}
+            child{ node[data]{\capricornus \nodepart{two}2}
+                child{ node[data]{\aquarius \nodepart{two}1}}
                 child[missing]
             }
         };
