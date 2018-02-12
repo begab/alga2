@@ -162,7 +162,8 @@ class Node {
 \end{lstlisting}
 
 			\begin{block}<2>{Megjegyzés}
-				A kiegészítő információ legyen az adott gyökerű részfa mérete (benne található kulcsok száma)
+				A kiegészítő információ legyen az adott gyökerű részfa mérete (benne található kulcsok száma). \\
+				Üres fa kiegészítő információja 0.
 			\end{block}
 		\end{column}
 		
@@ -190,42 +191,45 @@ class Node {
 \end{frame}
 
 \begin{frame}[fragile]{Adott rangú kulcs keresése}
-\begin{columns}
-\begin{column}{.6\linewidth}
+	\begin{columns}
+		\begin{column}{.6\linewidth}
 \begin{alltt}
 {\scshape RangKeres}(x, i) \{
    r = x.bal.kiegeszito + 1
 
-   if i < r
+   if (i < r) \{
       {\scshape RangKeres}(x.bal, i)
-   elseif i > r 
+   \} elseif (i > r) \{
       {\scshape RangKeres}(x.jobb, i - r)
-   else
+   \} else \{
       return x
+   \}
  \}
 \end{alltt}
-\end{column}
-\begin{column}{.35\linewidth}
-$h$ magas fa esetén $O(h)$
-\end{column}
-\end{columns}
+		\end{column}
+		\begin{column}{.35\linewidth}
+			$h$ magas fa esetén $O(h)$
+		\end{column}
+	\end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{Adott kulcs rangjának meghatározása}
 \begin{alltt}
 {\scshape RangMeghatároz}(x) \{
-   r = x.bal.kiegeszito + 1
-   while (x.apa != nil) \{
-       szulo = x.apa
-       if (x.kulcs > szulo.kulcs) \{
-           // azaz x szülőjének a jobb fia
-           r = r + szulo.bal.kiegeszito + 1
+   r = 0
+   y = x
+   while (y != nil) \{
+       if (x.kulcs >= y.kulcs) \{
+           r = r + y.bal.kiegeszito + 1
        \}
-       x = szulo
+       y = y.apa
    \}
    return r
  \}
 \end{alltt}
+%\begin{block}{Szövegesen}
+
+%\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{A kiegészítő információk fenntartása}
