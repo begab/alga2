@@ -1,0 +1,615 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[hungarian]{babel}
+\uselanguage{hungarian}
+\languagepath{hungarian}
+\deftranslation[to=hungarian]{Theorem}{T\'etel}
+\deftranslation[to=hungarian]{Example}{P\'elda}
+%\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor,pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{subfig}
+\usepackage{listings}
+\usepackage{lstlinebgrd}
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    urlcolor  = blue,
+    citecolor = blue,
+    linkbordercolor = {white},
+}
+\usepackage{alltt}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
+\usetikzlibrary{calc,chains,arrows,positioning}
+\tikzset{
+  ownnode/.style={fill,circle,inner sep=2pt,outer sep=0pt},
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
+  treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
+  int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
+  subtree/.style={isosceles triangle, draw=black, align=center, minimum height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
+  data/.style={
+      minimum width=2em,
+      minimum height=2em,
+      draw, rectangle split,
+      rectangle split parts=2, text centered,
+  }
+}
+
+\usepackage{animate}
+\usepackage{clrscode3e}
+\usetheme{Warsaw}
+\institute{Szegedi Tudományegyetem}
+\pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
+\logo{\pgfuseimage{institution-logo}}
+
+\title{Algoritmusok és adatszerkezetek II.}
+\subtitle{Kiegyensúlyozott keresőfák}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Mit értünk kiegyensúlyozott keresőfa alatt?}
+	\begin{itemize}
+		\item Eddigiekben láttuk, hogy a(z augmentált) keresőfák esetében érintett műveletek mindegyike $O(h)$ volt (ahol $h$ a fa magassága)
+		\item Ezen felül tudjuk azt is, hogy $h=O(n)$ 
+		\item Hogy keresnénk meg egy bináris keresőfa $r$ rangú elemét?
+		\item Hogyan határoznánk meg egy bináris keresőfa $x$ csúcsának rangját?
+	\end{itemize}
+	\pause
+	\begin{beamerboxesrounded}{Általános ötlet}
+		A fapontokban tárolt extra adattagok hozzásegíthetnek minket új műveletek hatékony ($O(h)$ idejű) végrehajtásához
+	\end{beamerboxesrounded}
+\end{frame}
+
+\begin{frame}
+  \animategraphics[loop,controls,width=\linewidth]{12}{avl/avl-}{0}{16}
+\end{frame}
+
+\begin{frame}{Új műveletek -- adott rangú kulcs meghatározása}
+	\begin{itemize}
+		\item Cél: $r \leq n$ ranggal rendelkező elem megtalálása a fában
+		\item Naiv (de működő) elgondolás: elkezdem bejárni a fát $<$ szerinti sorrendben, és megállok az $r$-ediknek érintett csúcsnál
+		\item<2> $O(h)$ helyett $\Theta(r)$ idejű algoritmus
+		\begin{itemize}
+			\item Kiegyensúlyozott fa és kellően nagy $r$ estében pedig $r \gg h$
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Új műveletek -- adott kulcs rangjának meghatározása}
+	\begin{itemize}
+		\item Naiv elgondolás: elkezdem bejárni a fát $<$ szerinti sorrendben, és megállok, ha $x$ kulcsot érintem
+		\item A válasz az $x$ megtalálásáig érintett kulcsok száma
+		\item $O(h)$ helyett $O(n)$ idejű algoritmus
+	\end{itemize}
+	\begin{alertblock}<2>{A megoldás}
+Minden csúcs tároljon el kiegészítő információt magáról!
+	\end{alertblock}
+\end{frame}
+
+\section{Rendezettminta-fa}
+\begin{frame}[fragile]{Rendezett-minta fa implementációja}
+	\begin{columns}
+		\begin{column}{.7\textwidth}
+\begin{lstlisting}[
+  linebackgroundcolor={
+    \btLstHL<1->{3}
+  }]
+class Node {
+    Object kulcs;
+    int kiegeszito;
+    Node* apa;
+    Node* bal;
+    Node* jobb;
+}
+\end{lstlisting}
+
+			\begin{block}<2>{Megjegyzés}
+				A kiegészítő információ legyen az adott gyökerű részfa mérete (benne található kulcsok száma). \\
+				Üres fa kiegészítő információja 0.
+			\end{block}
+		\end{column}
+		
+		\begin{column}{.4\textwidth}
+		\begin{figure}
+		\centering
+\begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
+    \node (A) [box,minimum width=6em] {kulcs};
+    \node (H) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) {kiegeszito};
+    \node (D) [box,anchor=south,minimum width=6em] at (A.north) {apa};
+    \node (B) [box,anchor=north west,minimum width=3em] at (H.south west) {bal};
+    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) {jobb};
+    \coordinate (E) at (0,2);
+    \coordinate (E) at (0,2);
+    \node[below left = 1cm of B] (F) {};
+    \node[below right = 1cm of C] (G) {};
+%    \path (D) edge [->] node[pos=0.5,anchor=-135,inner sep=1pt] {N} (E);
+    \path (D) edge [->] (E);
+    \path (B) edge [->] (F);
+    \path (C) edge [->] (G);
+\end{tikzpicture}
+		\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Adott rangú kulcs keresése}
+	\begin{columns}
+		\begin{column}{.6\linewidth}
+\begin{alltt}
+{\scshape RangKeres}(x, i) \{
+   r = x.bal.kiegeszito + 1
+
+   if (i < r) \{
+      {\scshape RangKeres}(x.bal, i)
+   \} elseif (i > r) \{
+      {\scshape RangKeres}(x.jobb, i - r)
+   \} else \{
+      return x
+   \}
+ \}
+\end{alltt}
+		\end{column}
+		\begin{column}{.35\linewidth}
+			$h$ magas fa esetén $O(h)$
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Adott kulcs rangjának meghatározása}
+\begin{alltt}
+{\scshape RangMeghatároz}(x) \{
+   r = 0
+   y = x
+   while (y != nil) \{
+       if (x.kulcs >= y.kulcs) \{
+           r = r + y.bal.kiegeszito + 1
+       \}
+       y = y.apa
+   \}
+   return r
+ \}
+\end{alltt}
+\begin{block}{Szövegesen}
+$x$-től a gyökérig lépkedve azon $y$ gyökerű részfák gyökérelemeinek rangjait összegezzük, melyekre $x.kulcs >= y.kulcs$
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{A kiegészítő információk fenntartása}
+	\begin{itemize}
+		\item A csúcsokban tárolt kiegészítő információknak mindig naprakészeknek kell legyenek
+	\end{itemize}
+	\begin{block}{Példa: {\scshape Töröl(40)}}
+		\begin{figure}
+		\centering
+			\begin{tikzpicture}[level/.style={sibling distance = 3cm},level distance = 1cm]
+				\only<1>{
+					\node[data]{40 \nodepart{second}6}
+						child{ node[data]{20 \nodepart{two}3}
+							child{ node[data]{13 \nodepart{two}1}}
+							child{ node[data]{33 \nodepart{two}1}}
+						}
+						child{ node[data]{52 \nodepart{two}2}
+							child[missing]
+							child{ node[data]{66 \nodepart{two}1}}
+						};
+				}
+				\only<2->{
+				      \node[data]{33 \nodepart{two}{\textcolor{red}{5}}}
+				          child{ node[data]{20 \nodepart{two}{\textcolor{red}{2}}}
+				      	    child{ node[data]{13 \nodepart{two}1}}
+				            child[missing]
+				          }
+				          child{ node[data]{52 \nodepart{two}2}
+				              child[missing]
+				              child{ node[data]{66 \nodepart{two}1}}
+				          };
+				}
+			\end{tikzpicture}
+		\end{figure}
+		\begin{alertblock}<3>{Észrevétel}
+			Épp ezért nem a csúcsok rangjára tekintünk közvetlenül kiegészítő információként (hiszen azt költséges lehet aktualizálni)
+		\end{alertblock}		
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Új művelet -- Forgatás}
+  \begin{itemize}
+    \item A keresőfákat forgatásokkal fogjuk tudni kiegyensúlyozni
+    \begin{figure}
+    \subfloat[$x$ körüli balra forgatás előtt]{
+      \begin{tikzpicture}[level/.style={sibling distance = 2cm},level distance=1cm]
+          \node[data]{x \nodepart{two}{20}}
+              child{ node[subtree]{$\alpha$\\ 6}
+              }
+              child{ node[data]{y \nodepart{two}{13}}
+                  child{ node[subtree]{$\beta$\\ 4}}
+                  child{ node[subtree]{$\gamma$\\ 8}}
+              };
+        \end{tikzpicture}
+    } \hfill
+    \only<2->{
+    \subfloat[$x$ körüli balra forgatás után]{
+    	\begin{tikzpicture}[level/.style={sibling distance = 2cm},level distance=1cm]
+    		\node[data]{y \nodepart{two} \only<-2>{\phantom{20}}\only<3>{20}}
+    		child{ node[data]{x \nodepart{two} \only<-2>{\phantom{11}}\only<3>{11}}
+    		                  child{ node[subtree]{$\alpha$\\ \only<3>{6}}}
+    		                  child{ node[subtree]{$\beta$\\ \only<3>{4}}}
+    		 }
+            child{ node[subtree]{$\gamma$\\\only<3>{8}}}
+            ;
+            \end{tikzpicture}
+        }
+    }
+    \end{figure}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{A kiegészítő információ fenntartása}
+	\begin{itemize}
+		\item Beszúrás esetén: a beszúrás helyétől a gyökérig menően a kiegészítő információk inkrementálása ($O(h)$)
+		\item Törlés esetén: a kieső csúcstól a gyökéig menően a kiegészítő információk dekrementálása ($O(h)$)
+		\item $x$ körüli forgatás esetén ($O(1)$)
+		\begin{itemize}
+			\item $y.kiegeszito = x.kiegeszito$
+			\item $x.kiegeszito = x.bal.kiegeszito + y.bal.kiegeszito + 1$, azaz $\alpha$-beli és $\beta$-beli csúcsok száma +1
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\section{Intervallumfák}
+\begin{frame}{Intervallumfák}
+	\begin{block}{Az intervallumfa sajátosságai}
+		\begin{itemize}
+			\item A csúcsok $[a;f]$ intervallumokat tárolnak
+			\begin{itemize}
+				\item $a$ és $f$ az intervallum alsó,-és felső végpontjait jelöli
+				\item $a \leq f$ feltehető
+			\end{itemize}
+			\item $<$ rendezést az intervallumok kezdőpontja szerint értelmezzük
+			\begin{itemize}
+				\item $[1;4] < [5;6]$
+				\item $[1;4] < [3;5]$
+				\item $[1;4] < [2;3]$
+			\end{itemize}
+		\end{itemize}
+	\end{block}
+  
+	\begin{block}<2->{Speciális művelet: átfedő intervallum keresése}
+		El akarjuk tudni dönteni, hogy a fa tartalmaz-e valamely $I=[i_a;i_f]$ intervallummal átfedő intervallumot.\\
+		$I$ és $J$ intervallumok átfednek $\Leftrightarrow i_a \leq j_f$ és $i_f \geq j_a$
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{Intervallum trichotómia}
+
+	\begin{itemize}
+		\item Az alábbi állítások közül pontosan egy teljesül bármely $(I,J)$ intervallumpárra
+		\begin{enumerate}
+			\item[a] $I \cap J \neq \emptyset$, azaz $I$ és $J$ intervallumok átfedik egymást
+			\item[b] $i_a > j_f$
+			\item[c] $i_f < j_a$
+		\end{enumerate}
+	\end{itemize}
+	
+\only<1>{
+	\begin{block}{Illusztráció -- 1. eset}
+		\begin{figure}
+			\centering
+			\subfloat[Átfedő I és J]{
+			\begin{tikzpicture}
+				\draw(0,0pt)--(2,0pt);
+				\foreach \x in {0,...,2}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (0,6pt) -- (1,6pt)
+					node[ownnode,pos=0,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,label=above:{$i_f$}]{};
+				\draw (0.5,30pt) -- (2,30pt)
+					node[ownnode,pos=0,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+
+			\begin{tikzpicture}
+				\draw(0,0pt)--(2,0pt);
+				\foreach \x in {0,...,2}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (0.5,6pt) -- (2,6pt)
+					node[ownnode,pos=0,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,label=above:{$i_f$}]{};
+				\draw (0,30pt) -- (1.6,30pt)
+					node[ownnode,pos=0,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+
+			\begin{tikzpicture}
+				\draw(0,0pt)--(2,0pt);
+				\foreach \x in {0,...,2}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (0.5,6pt) -- (1.2,6pt)
+					node[ownnode,pos=0,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,label=above:{$i_f$}]{};
+				\draw (0,30pt) -- (2,30pt)
+					node[ownnode,pos=0,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+
+			\begin{tikzpicture}
+				\draw(0,0pt)--(2,0pt);
+				\foreach \x in {0,...,2}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (0,6pt) -- (2,6pt)
+					node[ownnode,pos=0,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,label=above:{$i_f$}]{};
+				\draw (0.6,30pt) -- (1.1,30pt)
+					node[ownnode,pos=0,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+			}
+		\end{figure}
+	\end{block}
+}
+\only<2>{
+	\begin{block}{Illusztráció -- 2. és 3. eset}
+		\begin{figure}
+			\setcounter{subfigure}{1}
+			\centering
+			\subfloat[$i_a > j_f$]{
+			\begin{tikzpicture}
+				\draw(0,0pt)--(3,0pt);
+				\foreach \x in {0,...,3}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (1.6,6pt) -- (2.6,6pt)
+					node[ownnode,pos=0,fill=red,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,label=above:{$i_f$}]{};
+				\draw (0,30pt) -- (0.8,30pt)
+					node[ownnode,pos=0,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,fill=red,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+			} \hfil
+			\subfloat[$i_f < j_a$]{
+			\begin{tikzpicture}
+				\draw(0,0pt)--(3,0pt);
+				\foreach \x in {0,...,3}
+					\draw(\x,0pt)--(\x,-3pt);
+				\draw (0,6pt) -- (0.8,6pt)
+					node[ownnode,pos=0,label=above:{$i_a$}]{}
+					node[ownnode,pos=1,fill=red,,label=above:{$i_f$}]{};
+				\draw (1.8,30pt) -- (2.6,30pt)
+					node[ownnode,pos=0,fill=red,label=above:{$j_a$}]{}
+					node[ownnode,pos=1,label=above:{$j_f$}]{};
+			\end{tikzpicture}
+			}
+		\end{figure}
+	\end{block}
+}
+\end{frame}
+
+\begin{frame}[fragile]{Intervallumfa implementációja}
+	\begin{columns}
+		\begin{column}{.7\textwidth}
+\begin{lstlisting}[
+  linebackgroundcolor={
+    \btLstHL<1->{2-3}
+  }]
+class Node {
+    int also;
+    int felso;
+    int kiegeszito;
+    Node* apa;
+    Node* bal;
+    Node* jobb;
+}
+\end{lstlisting}
+			\begin{block}<2>{Ötlet}
+				A kiegészítő információ legyen az adott gyökerű részfában található maximális felső végpont
+			\end{block}
+		\end{column}
+		
+		\begin{column}{.4\textwidth}
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
+				    \node (A) [box,minimum width=6em,fill=orange!30] {also};
+				    \node (I) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) {felso};
+				    \node (H) [box,anchor=north,minimum width=6em] at (I.south) {kiegeszito};
+			    	\node (D) [box,anchor=south,minimum width=6em] at (A.north) {apa};
+				    \node (B) [box,anchor=north west,minimum width=3em] at (H.south west) {bal};
+				    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) {jobb};
+				    \coordinate (E) at (0,2);
+				    \coordinate (E) at (0,2);
+			    	\node[below left = 1cm of B] (F) {};
+				    \node[below right = 1cm of C] (G) {};
+				%    \path (D) edge [->] node[pos=0.5,anchor=-135,inner sep=1pt] {N} (E);
+				    \path (D) edge [->] (E);
+				    \path (B) edge [->] (F);
+			    	\path (C) edge [->] (G);
+				\end{tikzpicture}
+			\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Intervallumfa -- példa}
+	\begin{figure}
+		\centering
+	    \begin{tikzpicture}[level/.style={sibling distance = 7cm/#1},level distance = 1.2cm]
+	    \node[data]{[6;7]\nodepart{two}11}
+	        child{
+	            node[data,color=purple]{[4;5]\nodepart{two}6}
+	            child{node[data,color=orange] {[0;1]\nodepart{two}2}}
+	            child{node[data,color=olive] {[4;6]\nodepart{two}6}}
+	            }
+	        child{
+	            node[data,color=red]{[8;11]\nodepart{two}11}
+	            child{node[data,color=blue]{[6;8]\nodepart{two}8}}
+	            child{node[data,color=cyan]{[10;10]\nodepart{two}10}}
+	        };
+	    \end{tikzpicture}
+
+   		\vskip 0.8cm
+    
+		\begin{tikzpicture}[thick]
+			\draw(0,0pt)--(11,0pt);
+			\foreach \x in {0,1,...,10}
+				\draw(\x,0pt)--(\x,-3pt) node[below] {$\x$};
+			\draw[orange] (0,6pt) -- (1,6pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw[purple] (4,12pt) -- (5,12pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw[olive] (4,18pt) -- (6,18pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw (6,24pt) -- (7,24pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw[blue] (6,30pt) -- (8,30pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw[red] (8,36pt) -- (11,36pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+			\draw[cyan] (10,42pt) -- (10,42pt)
+				node[ownnode,pos=0]{}
+				node[ownnode,pos=1]{};
+		\end{tikzpicture}
+	\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Átfedő intervallum keresése $x$ gyökerű részfában}
+\begin{alltt}
+{\scshape ÁtfedőKeres}(x, i) \{
+   while (x != nil) \{
+     if (i.also <= x.felso és i.felso >= x.also) \{
+        return x    // átfedést találtunk
+     \}
+     if (x.bal != nil és x.bal.kiegeszito >= i.also) \{
+       x = x.bal    // folytassuk balra a keresést
+     \} else \{
+       x = x.jobb   // folytassuk jobbra a keresést
+     \}
+   \}
+   return nil       // nem találtunk átfedő intervallumot
+ \}
+\end{alltt}
+\end{frame}
+
+\begin{frame}{Átfedő intervallum keresésének helyessége}
+	\begin{theorem}
+	Az {\scshape ÁtfedőKeres}(x,i) minden végrehajtása csak abban az esetben tér vissza \texttt{nil}-lel, ha az $x$ gyökerű intervallumfában nem található $i$-vel átfedő intervallum.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{Átfedő intervallum keresésének helyessége -- jobbra lépés}
+	\begin{itemize}
+		\item Akkor lépünk jobbra, ha
+		\begin{itemize}
+			\item Nincs bal részfa, vagy 
+			\item Van bal részfa, de még a legnagyobb felső végpont is elmarad $i$ intervallum alsó végpontjától (trichotómia b) esete)
+		\end{itemize}
+		\pause $\Rightarrow$ jobbra lépéskor a bal részfában biztosan nincs átfedés
+		\pause
+		\begin{alertblock}{Összegezve}
+			Vagy fogunk jobbra lépve átfedő intervallumot találni, vagy balra lépve se találtunk volna
+		\end{alertblock}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Átfedő intervallum keresésének helyessége -- balra lépés}
+	\begin{itemize}
+		\item Előfordulhat-e, hogy $x$-nél balra menve nem találunk $i$-vel átfedő intervallumot, jobbra menve azonban találhatnánk?
+		\begin{itemize}
+		    \pause
+			\item Indirekt bizonyítás: tegyük fel, hogy előfordulhat ilyen
+			\begin{itemize}
+				\item Balra mentünk, tehát $\exists y \in x.bal$\footnote{$x.bal$ az $x$ csúcs bal fiát a gyökeréül tudó részfát jelöli}, melyre $y.felso > i.also$
+			    \pause
+				\item Feltevésünk szerint $x.bal$-ban nincs $i$-vel átfedő intervallum $\rightarrow$ trichotómia c) esete \pause{$\rightarrow y.also > i.felso$}
+				\item A keresőfa-tulajdonságból adódóan pedig $\forall y' \in x.jobb$ esetében $y'.also > y.also$ teljesül
+				\pause
+				\item Tehát $\forall y' \in x.jobb$ az $i$ intervallumra nézve c)-típusú (vele át nem fedő) lehet csupán
+			\end{itemize}				
+		\end{itemize}
+		\begin{alertblock}{Összegezve}
+			Ha balra lépve nem sikerül átfedő intervallumot találjuk, akkor jobbra lépve se találhattunk volna
+		\end{alertblock}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Összegzés}
+	\begin{itemize}
+		\item Addicionális adattagok bevezetésével újfajta kérdések hatékony megválaszolása válhat lehetővé
+		\item Adatszerkezetek kibővítésének fő lépései
+		\begin{enumerate}
+			\item Alap-adatszerkezet megválasztása (nem csak bináris keresőfa)
+			\item Alap-adatszerkezet kiegészítő információjának kijelölése
+			\item Kiegészítő információjának \textbf{hatékony} fenntarthatóságának igazolása
+			\item Új hatékony műveletek kifejlesztése
+		\end{enumerate}
+	\end{itemize}
+\end{frame}
+
+\end{document}
