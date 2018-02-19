@@ -233,20 +233,20 @@ class Node {
 
 \begin{frame}{Legalább hány kulcsból áll egy $h$ magas AVL fa?}
 	\begin{table}
-	\centering
-	\begin{tabular}{c|c}
-	magasság & $m$ \\ \hline
-	1 & 1     \\
-	2 & 2     \\
-    3 & 1+2+1=4 \\
-	4 & 2+4+1=7 \\
-	5 & 4+7+1=12 \\
-	6 & 7+12+1=20 \\
-	7 & 12+20+1=33 \\
-	8 & 20+33+1=54 \\
-	\vdots & \vdots \\
-\only<2->{h & $m_{h-2}+m_{h-1}+1$}
-	\end{tabular}
+		\centering
+		\begin{tabular}{c|c}
+			magasság & $m$ \\ \hline
+			1 & 1     \\
+			2 & 2     \\
+		    3 & 1+2+1=4 \\
+			4 & 2+4+1=7 \\
+			5 & 4+7+1=12 \\
+			6 & 7+12+1=20 \\
+			7 & 12+20+1=33 \\
+			8 & 20+33+1=54 \\
+		    \vdots & \vdots \\
+		    \pause h & $m_{h-2}+m_{h-1}+1$
+		\end{tabular}
 	\end{table}
 %	\begin{block}{Fibonacci sor}
 %	$F_1=F_2=1$, továbbá $F_i=F_{i-2}+F_{i-1}$, $i>2$ esetén \\
@@ -258,15 +258,14 @@ class Node {
 	\begin{itemize}
 		\item Jelölje $m_h$ a $h$ magas AVL fában lévő minimálisan található kulcsok számát ($m_1=1, m_2=2$)
 		\item Általánosságban ($h>2$ esetén): $m_h=m_{h-2}+m_{h-1}+1$
-		\item Nyilvánvalóan igaz továbbá, hogy $m_{h-2} < m_{h-1}$, vagyis $m_h>2 m_{h-2}$ \only<2->{$> 2*2 m_{h-4}$} \only<3->{$> 2*2*2 m_{h-6}$}
-		\item<3-> Általánosságban $m_{h} > 2^i m_{h-2i}$, amit $m_1$-ig visszavezetve $m_{h} > 2^{h/2}$
-		\item<4-> Tegyük fel, hogy egy $h$ magas AVL fa $n \geq m_h$ csúcsból áll, azaz $n > 2^{h/2}$ \only<5->{, vagyis $h < 2 \log_2(n)$}
+		\item $m_{h-2} < m_{h-1}$ természetesen teljesül, ahonnan \only<1>{$$m_h > 2 m_{h-2}\vphantom{>2*2 m_{h-4}>\ldots>2^i m_{h-2i}}$$}\only<2->{$$m_h > 2 m_{h-2}>2*2 m_{h-4}>\ldots>2^i m_{h-2i}$$}
+		\item<3-> $m_{h} > 2^i m_{h-2i}$ összefüggést $m_1$-ig kijátszva $m_{h} > 2^{h/2}$
+		\item<4-> Tegyük fel, hogy egy $h$ magas AVL fa $n \geq m_h$ csúcsból áll, azaz $n > 2^{h/2}$, vagyis $h < 2 \log_2(n)$
 	\end{itemize}
-	\only<6->{
+	\pause[5]
 		\begin{block}{Megjegyzés}
 		Az élesebb $h < 1.44 \log_2(n)$ korlát is bizonyítható.
 		\end{block}
-	}
 \end{frame}
 
 \begin{frame}{AVL fák kiegyensúlyozottságának fenntartása forgatásokkal}
