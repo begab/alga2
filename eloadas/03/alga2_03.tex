@@ -197,9 +197,9 @@ Egy n különböző kulcsot tartalmazó véletlen építésű bináris keresőfa
 class Node {
     Object kulcs;
     int magassag;
-    Node* apa;
-    Node* bal;
-    Node* jobb;
+    Node *apa;
+    Node *bal;
+    Node *jobb;
 }
 \end{lstlisting}
 			\begin{block}<2>{Megjegyzés}
@@ -329,22 +329,22 @@ class Node {
 
 \begin{frame}{Amikor egy forgatás nem elég -- segédforgatás}
 \begin{columns}
-\begin{column}{.7\linewidth}
+\begin{column}{.6\linewidth}
     \begin{figure}
-      \begin{tikzpicture}[scale=.9,level/.style={sibling distance = 3cm},level distance=1.5cm]
+      \begin{tikzpicture}[level/.style={sibling distance =3cm}, level 1/.style={sibling distance=2.5cm}, level 2/.style={sibling distance=2.5cm}]
           \node[data]{x \nodepart{two}h+1}
               child{ node[subtree, color=red]{$\alpha$\\ h-2}
               }
               child{ node[data,color=red]{y \nodepart{two}h}
                   child{ node[data]{z \nodepart{two} h-1}
-                     child{node[subtree]{$\beta_1$ \\ \scriptsize{< h-1}}}
-                     child{node[subtree]{$\beta_2$ \\ \scriptsize{< h-1} }}}
+                     child{node[subtree]{$\beta_1$ \\ \tiny{< h-1}}}
+                     child{node[subtree]{$\beta_2$ \\ \tiny{< h-1} }}}
                   child{ node[subtree]{$\gamma$\\ h-2 }}
               };
         \end{tikzpicture}
     \end{figure}
 \end{column}
-\begin{column}{.4\linewidth}
+\begin{column}{.5\linewidth}
     \begin{alertblock}{Megoldás}
     $y$ körül jobbra forgatunk, majd $x$ körül balra
     \end{alertblock}
@@ -354,9 +354,9 @@ class Node {
 
 \begin{frame}{Amikor egy forgatás nem elég -- segédforgatás}
 \begin{columns}
-\begin{column}{.7\linewidth}
+\begin{column}{.6\linewidth}
     \begin{figure}
-		\begin{tikzpicture}[level/.style={sibling distance =3cm}, level 1/.style={sibling distance=3cm}, level 2/.style={sibling distance=1.5cm}]
+		\begin{tikzpicture}[level/.style={sibling distance =3cm}, level 1/.style={sibling distance=2.5cm}, level 2/.style={sibling distance=1.5cm}]
           \node[data]{x \nodepart{two}h+1}
               child{ node[subtree, color=red]{$\alpha$\\ h-2}
               }
@@ -370,9 +370,9 @@ class Node {
         \end{tikzpicture}
     \end{figure}
 \end{column}
-\begin{column}{.4\linewidth}
+\begin{column}{.5\linewidth}
     \begin{block}{Észrevétel}
-    $\beta_2$ nem lehetett magasabb, mint $\gamma$
+    $\beta_2$ nem lehetett magasabb $\gamma$-nál
     \end{block}
 \end{column}
 \end{columns}
@@ -380,11 +380,11 @@ class Node {
 
 \begin{frame}{Amikor egy forgatás nem elég -- segédforgatás}
 \begin{columns}
-\begin{column}{.7\linewidth}
+\begin{column}{.6\linewidth}
     \begin{figure}
 		\begin{tikzpicture}[level/.style={sibling distance =3cm}, level 1/.style={sibling distance=3cm}, level 2/.style={sibling distance=1.5cm}]
           \node[data]{z \nodepart{two}h}
-                child{[sibling distance=0.8cm] node[data]{x \nodepart{two} h-1}
+                child{node[data]{x \nodepart{two} h-1}
                 	child{node[subtree]{$\alpha$ \\ h-2}}
                     child{node[subtree]{$\beta_1$}}
                   }
@@ -395,7 +395,11 @@ class Node {
         \end{tikzpicture}
     \end{figure}
 \end{column}
-\begin{column}{.4\linewidth}
+\begin{column}{.5\linewidth}
+\begin{block}{Miért kellett kettőt forgassunk?}
+Mert (kiinduláskor) $x$ \textbf{jobboldali} részfája volt magasabb \\
+És mert ennek a részfának már a \textbf{baloldali} részfája volt magasabb (zikk-zakk)
+\end{block}
 \end{column}
 \end{columns}
 \end{frame}
