@@ -270,9 +270,9 @@ class Node {
 
 \begin{frame}{AVL fák kiegyensúlyozottságának fenntartása forgatásokkal}
     \begin{figure}
-    \subfloat[$x$ körüli balra forgatás előtt]{
+    \subfloat[\only<1>{beszúrás előtt}\only<2->{beszúrás után}]{
       \begin{tikzpicture}[scale=.9,level/.style={sibling distance = 2.4cm},level distance=1.4cm]
-          \node[data]{x \nodepart{two}\only<1>{h}\only<2->{\textcolor{red}{h+1}}}
+          \node[data,minimum width=1cm]{x \nodepart{two}\only<1>{h}\only<2->{\textcolor{red}{h+1}}}
               child{ node[subtree]{$\alpha$\\ h-2}
               }
               child{ node[data]{y \nodepart{two}\only<1>{h-1}\only<2->{\textcolor{red}{h}}}
@@ -284,12 +284,12 @@ class Node {
     \only<2->{
     \subfloat[$x$ körüli balra forgatva]{
     	\begin{tikzpicture}[scale=.9,level/.style={sibling distance =2.4cm},level distance=1.4cm]
-    		\node[data]{y \nodepart{two} \only<-2>{\phantom{h}}\only<3>{h}}
+    		\node[data]{y \nodepart{two} \only<-2>{\phantom{h}}\only<-2>{\phantom{h}}\only<3>{h}}
     		child{ node[data]{x \nodepart{two} \only<-2>{\phantom{h-1}}\only<3>{h-1}}
-    		                  child{ node[subtree]{$\alpha$\\ \only<3>{h-2}}}
-    		                  child{ node[subtree]{$\beta$\\ \only<3>{h-2}}}
+    		                  child{ node[subtree]{$\alpha$\\ \only<-2>{\phantom{h-2}}\only<3>{h-2}}}
+    		                  child{ node[subtree]{$\beta$\\ \only<-2>{\phantom{h-2}}\only<3>{h-2}}}
     		 }
-            child{ node[subtree]{$\gamma$\\\only<3>{h-1}}}
+            child{ node[subtree]{$\gamma$\\\only<-2>{\phantom{h-1}}\only<3>{h-1}}}
             ;
             \end{tikzpicture}
         }
@@ -299,9 +299,9 @@ class Node {
 
 \begin{frame}{Amikor egy forgatás nem elég}
     \begin{figure}
-    \subfloat[$x$ körüli balra forgatás előtt]{
+    \subfloat[\only<1>{beszúrás előtt}\only<2->{beszúrás után}]{
       \begin{tikzpicture}[scale=.9,level/.style={sibling distance = 2.4cm},level distance=1.4cm]
-          \node[data]{x \nodepart{two}\only<1>{h}\only<2->{\textcolor{red}{h+1}}}
+          \node[data, minimum width=1cm]{x \nodepart{two}\only<1>{h}\only<2->{\textcolor{red}{h+1}}}
               child{ node[subtree]{$\alpha$\\ h-2}
               }
               child{ node[data]{y \nodepart{two}\only<1>{h-1}\only<2->{\textcolor{red}{h}}}
@@ -314,11 +314,11 @@ class Node {
     \subfloat[$x$ körüli balra forgatva]{
     	\begin{tikzpicture}[scale=.9,level/.style={sibling distance =2.4cm},level distance=1.4cm]
     		\node[data]{y \nodepart{two} \only<-2>{\phantom{h+1}}\only<3>{h+1}}
-    		child{ node[data]{x \nodepart{two} \only<-2>{\phantom{h}}\only<3>{\textcolor{red}{\textbf{h}}}}
-    		                  child{ node[subtree]{$\alpha$\\ \only<3>{h-2}}}
-    		                  child{ node[subtree]{$\beta$\\ \only<3>{h-1}}}
+    		child{ node[data]{x \nodepart{two} \only<-2>{\phantom{\textbf{h}}}\only<3>{\textcolor{red}{\textbf{h}}}}
+    		                  child{ node[subtree]{$\alpha$\\ \only<-2>{\phantom{h-2}}\only<3>{h-2}}}
+    		                  child{ node[subtree]{$\beta$\\ \only<-2>{\phantom{h-1}}\only<3>{h-1}}}
     		 }
-            child{ node[subtree]{$\gamma$\\\only<3>{\textcolor{red}{\textbf{h-2}}}}}
+            child{ node[subtree]{$\gamma$\\\only<-2>{\phantom{\textbf{h-2}}}\only<3>{\textcolor{red}{\textbf{h-2}}}}}
             ;
             \end{tikzpicture}
         }
