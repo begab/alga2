@@ -1,0 +1,256 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[hungarian]{babel}
+\uselanguage{hungarian}
+\languagepath{hungarian}
+\deftranslation[to=hungarian]{Theorem}{T\'etel}
+\deftranslation[to=hungarian]{Example}{P\'elda}
+\deftranslation[to=hungarian]{Definition}{Defin\'ici\'o}
+%\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor,pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{subfig}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{lstlinebgrd}
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    urlcolor  = blue,
+    citecolor = blue,
+    linkbordercolor = {white},
+}
+\usepackage{alltt}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
+\usetikzlibrary{calc,chains,arrows,positioning}
+\tikzset{
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
+  treenode/.style = {align=center, inner sep=0pt, text centered, font=\sffamily},
+  arn_n/.style = {treenode, circle, white, font=\sffamily\bfseries, draw=black, fill=black, text width=1.5em},
+  arn_r/.style = {treenode, circle, red, draw=red, text width=1.5em, very thick}
+}
+\usetheme{Warsaw}
+\institute{Szegedi Tudományegyetem}
+\pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
+\logo{\pgfuseimage{institution-logo}}
+
+\title{Algoritmusok és adatszerkezetek II.}
+\subtitle{Piros-fekete fák}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Mit értünk kiegyensúlyozott keresőfa alatt?}
+	\begin{beamerboxesrounded}{Emlékeztető}
+Az eddig tárgyalt műveletek $h$ magas fákra $O(h)$ idejűek voltak \\
+A továbbiakban szeretnénk, ha $h=\Theta(\log n)$ is teljesülne
+	\end{beamerboxesrounded}
+    \begin{columns}
+    	\begin{column}{.5\linewidth}
+\begin{figure}[!h]
+\centering
+    \begin{tikzpicture}[scale=.5, level/.style={sibling distance = 3cm}]
+    \node[treenode]{1}
+		child[missing]
+    	child{ node[treenode] {2}
+			child[missing]
+    		child{ node[treenode] {3}
+				child[missing]
+    			child{ node[treenode] {4}
+					child[missing]
+	    			child{ node[treenode] {5}
+						child[missing]
+		    			child{ node[treenode] {6}
+							child[missing]
+			    			child{ node[treenode] {7}}
+		    			}
+	    			}
+    			}
+    		}
+    	};
+\end{tikzpicture}
+\end{figure}
+    	\end{column}
+    	\begin{column}{.5\linewidth}
+\begin{figure}
+\centering
+    \begin{tikzpicture}[scale=.5, level 1/.style={sibling distance=6cm}, level 2/.style={sibling distance=3cm}]
+    \node[treenode]{4}
+    	child{ node[treenode] {2}
+			child{node[treenode] {1}}
+			child{node[treenode,level distance=3cm] {3}}
+    	}
+    	child{ node[treenode] {6}
+			child{node[treenode] {5}}
+			child{node[treenode] {7}}
+    	};
+\end{tikzpicture}
+\end{figure}
+    	\end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Piros-fekete fák tulajdonságai}
+\begin{enumerate}
+\item Minden csúcs színe piros vagy fekete
+\item A gyökér színe fekete
+\item Minden levele\footnote{levelek alatt itt most az ''őrszemeket'' értjük} fekete
+\item A piros csúcsoknak \textbf{kizárólag} fekete színű gyerekeik vannak
+\item Bármely csúcsból azonos számú fekete csúcs érintésével jutunk el bármelyik levélbe
+\end{enumerate}
+
+\pause
+\begin{theorem}
+Bármely $n$ kulcsú piros-fekete fa magassága legfeljebb $2\log(n+1)$.
+\end{theorem}
+\end{frame}
+
+\begin{frame}[fragile]{Piros-fekete fa implementációja}
+	\begin{columns}
+		\begin{column}{.7\textwidth}
+\begin{lstlisting}[
+  linebackgroundcolor={
+    \btLstHL<1->{3}
+  }]
+class Node {
+    Object kulcs;
+    boolean fekete;
+    Node *apa;
+    Node *bal;
+    Node *jobb;
+}
+\end{lstlisting}
+			\begin{block}<2>{Megjegyzés}
+				Az eddigi kiegészítő információk közül a legolcsóbb (csupán 1 bit)
+			\end{block}
+
+		\end{column}
+		
+		\begin{column}{.4\textwidth}
+		\begin{figure}
+		\centering
+\begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
+    \node (A) [box,minimum width=6em] {kulcs};
+    \node (H) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) {fekete};
+    \node (D) [box,anchor=south,minimum width=6em] at (A.north) {apa};
+    \node (B) [box,anchor=north west,minimum width=3em] at (H.south west) {bal};
+    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) {jobb};
+    \coordinate (E) at (0,2);
+    \coordinate (E) at (0,2);
+    \node[below left = 1cm of B] (F) {};
+    \node[below right = 1cm of C] (G) {};
+%    \path (D) edge [->] node[pos=0.5,anchor=-135,inner sep=1pt] {N} (E);
+    \path (D) edge [->] (E);
+    \path (B) edge [->] (F);
+    \path (C) edge [->] (G);
+\end{tikzpicture}
+		\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Legalább hány kulcsból áll egy $h$ magas AVL fa?}
+	\begin{table}
+		\centering
+		\begin{tabular}{c|c}
+			magasság & $m$ \\ \hline
+			1 & 1     \\
+			2 & 2     \\
+		    3 & 1+2+1=4 \\
+			4 & 2+4+1=7 \\
+			5 & 4+7+1=12 \\
+			6 & 7+12+1=20 \\
+			7 & 12+20+1=33 \\
+			8 & 20+33+1=54 \\
+		    \vdots & \vdots \\
+		    \pause h & $m_{h-2}+m_{h-1}+1$
+		\end{tabular}
+	\end{table}
+%	\begin{block}{Fibonacci sor}
+%	$F_1=F_2=1$, továbbá $F_i=F_{i-2}+F_{i-1}$, $i>2$ esetén \\
+%	1,1,2,3,5,8,13,21,34,55
+%	\end{block}
+\end{frame}
+
+\begin{frame}{Miért igaz, hogy az AVL fák $O(\log n)$ magasak?}
+	\begin{itemize}
+		\item Jelölje $m_h$ a $h$ magas AVL fában lévő minimálisan található kulcsok számát ($m_1=1, m_2=2$)
+		\item Általánosságban ($h>2$ esetén): $m_h=m_{h-2}+m_{h-1}+1$
+		\item $m_{h-2} < m_{h-1}$ természetesen teljesül, ahonnan \only<1>{$$m_h > 2 m_{h-2}\vphantom{>2*2 m_{h-4}>\ldots>2^i m_{h-2i}}$$}\only<2->{$$m_h > 2 m_{h-2}>2*2 m_{h-4}>\ldots>2^i m_{h-2i}$$}
+		\item<3-> $m_{h} > 2^i m_{h-2i}$ összefüggést $m_1$-ig kijátszva $m_{h} > 2^{h/2}$
+		\item<4-> Tegyük fel, hogy egy $h$ magas AVL fa $n \geq m_h$ csúcsból áll, azaz $n > 2^{h/2}$, vagyis $h < 2 \log_2(n)$
+	\end{itemize}
+	\pause[5]
+		\begin{block}{Megjegyzés}
+		Az élesebb $h < 1.44 \log_2(n)$ korlát is bizonyítható.
+		\end{block}
+\end{frame}
+
+
+\begin{frame}{Összegzés}
+	\begin{itemize}
+		\item A bináris keresőfák műveletei $O(h)$ idejűek
+		\item Legrosszabb esetben azonban $n$ is lehet a fák magassága ($\Theta(\log n)$ helyett)
+		\item Kiegyensúlyozott keresőfák használatával garantálható, hogy a keresőfa kiegyensúlyozottsága sose romoljon el ''túlságosan''
+	\end{itemize}
+\end{frame}
+
+\end{document}

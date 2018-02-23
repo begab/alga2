@@ -16,7 +16,6 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{lstlinebgrd}
-\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,7 +82,6 @@
 \usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
 \usetikzlibrary{calc,chains,arrows,positioning}
 \tikzset{
-  ownnode/.style={fill,circle,inner sep=2pt,outer sep=0pt},
   box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
   treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
   int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
@@ -96,8 +94,6 @@
   }
 }
 
-\usepackage{animate}
-\usepackage{clrscode3e}
 \usetheme{Warsaw}
 \institute{Szegedi Tudományegyetem}
 \pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
@@ -439,15 +435,15 @@ Mert (kiinduláskor) $x$ \textbf{jobboldali} részfája volt magasabb \\
 \section{B-fa}
 
 \begin{frame}{B-fa definíciója}
-\begin{definition}
-$t$-rangú B-fa alatt olyan általános keresőfát értünk, amelyre teljesül, hogy:\\
-\begin{itemize}
-\item Minden gyökértől különböző $p$ csúcsára $t ~\leq Rang(p) \leq 2t$\footnote{rang alatt a fapontban tárolt kulcsok számát értjük}
-\item $r$ gyökerének rangjára pedig $1 \leq Rang(r) \leq 2t$ \\
-\item Minden nemlevél $p$ csúcsra és $1 \leq i \leq Rang(p)+1$ esetén $Fiu(p, i) \neq Nil$
-\item Minden $p \in F$ levélpontra $d(p) = h(F)$, azaz minden levél pont mélysége azonos.
-\end{itemize}
-\end{definition}
+	\begin{definition}
+		A $t$-rendű B-fa olyan általános keresőfa, amelyre teljesül, hogy:\\
+		\begin{itemize}
+			\item Minden gyökértől különböző $p$ csúcsára $t \leq Rang(p) \leq 2t$ (rang alatt a fapontban tárolt kulcsok számát értjük)
+			\item $r$ gyökerének rangjára pedig $1 \leq Rang(r) \leq 2t$ \\
+			\item Minden nemlevél $p$ csúcsra és $1 \leq i \leq Rang(p)+1$ esetén $p.gyerekek[i] \neq Nil$
+			\item Minden levél azonos mélységű (ez az érték a fa $h$ magassága).
+		\end{itemize}
+	\end{definition}
 \end{frame}
 
 \begin{frame}[fragile]{B-fa implementációja}
