@@ -98,69 +98,26 @@
 
 \maketitle
 
-\begin{frame}{Mit értünk kiegyensúlyozott keresőfa alatt?}
-	\begin{beamerboxesrounded}{Emlékeztető}
-Az eddig tárgyalt műveletek $h$ magas fákra $O(h)$ idejűek voltak \\
-A továbbiakban szeretnénk, ha $h=\Theta(\log n)$ is teljesülne
-	\end{beamerboxesrounded}
-    \begin{columns}
-    	\begin{column}{.5\linewidth}
-\begin{figure}[!h]
-\centering
-    \begin{tikzpicture}[scale=.5, level/.style={sibling distance = 3cm}]
-    \node[treenode]{1}
-		child[missing]
-    	child{ node[treenode] {2}
-			child[missing]
-    		child{ node[treenode] {3}
-				child[missing]
-    			child{ node[treenode] {4}
-					child[missing]
-	    			child{ node[treenode] {5}
-						child[missing]
-		    			child{ node[treenode] {6}
-							child[missing]
-			    			child{ node[treenode] {7}}
-		    			}
-	    			}
-    			}
-    		}
-    	};
-\end{tikzpicture}
-\end{figure}
-    	\end{column}
-    	\begin{column}{.5\linewidth}
-\begin{figure}
-\centering
-    \begin{tikzpicture}[scale=.5, level 1/.style={sibling distance=6cm}, level 2/.style={sibling distance=3cm}]
-    \node[treenode]{4}
-    	child{ node[treenode] {2}
-			child{node[treenode] {1}}
-			child{node[treenode,level distance=3cm] {3}}
-    	}
-    	child{ node[treenode] {6}
-			child{node[treenode] {5}}
-			child{node[treenode] {7}}
-    	};
-\end{tikzpicture}
-\end{figure}
-    	\end{column}
-    \end{columns}
+\begin{frame}{Piros-fekete fák tulajdonságai}
+	\begin{enumerate}
+		\item Minden csúcs színe piros vagy fekete
+		\item A gyökér színe fekete
+		\item Minden levele\footnote{levelek alatt itt most az ''őrszemeket'' értjük} fekete
+		\item A piros csúcsoknak \textbf{kizárólag} fekete színű gyerekeik vannak
+		\item Bármely csúcsból azonos számú fekete csúcs érintésével jutunk el bármelyik levélbe
+	\end{enumerate}
+
+	\pause
+	\begin{theorem}
+		Bármely $n$ kulcsú piros-fekete fa magassága legfeljebb $2\log(n+1)$.
+	\end{theorem}
 \end{frame}
 
-\begin{frame}{Piros-fekete fák tulajdonságai}
-\begin{enumerate}
-\item Minden csúcs színe piros vagy fekete
-\item A gyökér színe fekete
-\item Minden levele\footnote{levelek alatt itt most az ''őrszemeket'' értjük} fekete
-\item A piros csúcsoknak \textbf{kizárólag} fekete színű gyerekeik vannak
-\item Bármely csúcsból azonos számú fekete csúcs érintésével jutunk el bármelyik levélbe
-\end{enumerate}
-
-\pause
-\begin{theorem}
-Bármely $n$ kulcsú piros-fekete fa magassága legfeljebb $2\log(n+1)$.
-\end{theorem}
+\begin{frame}{Fekete-magasság}
+	\begin{itemize}
+		\item $fm(x)$ jelölje az $x$ csúcsból induló, bármely levélig vezető úton található,
+		($x$-en kívüli) fekete csúcsok számát
+	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Piros-fekete fa implementációja}
@@ -206,44 +163,6 @@ class Node {
 		\end{column}
 	\end{columns}
 \end{frame}
-
-\begin{frame}{Legalább hány kulcsból áll egy $h$ magas AVL fa?}
-	\begin{table}
-		\centering
-		\begin{tabular}{c|c}
-			magasság & $m$ \\ \hline
-			1 & 1     \\
-			2 & 2     \\
-		    3 & 1+2+1=4 \\
-			4 & 2+4+1=7 \\
-			5 & 4+7+1=12 \\
-			6 & 7+12+1=20 \\
-			7 & 12+20+1=33 \\
-			8 & 20+33+1=54 \\
-		    \vdots & \vdots \\
-		    \pause h & $m_{h-2}+m_{h-1}+1$
-		\end{tabular}
-	\end{table}
-%	\begin{block}{Fibonacci sor}
-%	$F_1=F_2=1$, továbbá $F_i=F_{i-2}+F_{i-1}$, $i>2$ esetén \\
-%	1,1,2,3,5,8,13,21,34,55
-%	\end{block}
-\end{frame}
-
-\begin{frame}{Miért igaz, hogy az AVL fák $O(\log n)$ magasak?}
-	\begin{itemize}
-		\item Jelölje $m_h$ a $h$ magas AVL fában lévő minimálisan található kulcsok számát ($m_1=1, m_2=2$)
-		\item Általánosságban ($h>2$ esetén): $m_h=m_{h-2}+m_{h-1}+1$
-		\item $m_{h-2} < m_{h-1}$ természetesen teljesül, ahonnan \only<1>{$$m_h > 2 m_{h-2}\vphantom{>2*2 m_{h-4}>\ldots>2^i m_{h-2i}}$$}\only<2->{$$m_h > 2 m_{h-2}>2*2 m_{h-4}>\ldots>2^i m_{h-2i}$$}
-		\item<3-> $m_{h} > 2^i m_{h-2i}$ összefüggést $m_1$-ig kijátszva $m_{h} > 2^{h/2}$
-		\item<4-> Tegyük fel, hogy egy $h$ magas AVL fa $n \geq m_h$ csúcsból áll, azaz $n > 2^{h/2}$, vagyis $h < 2 \log_2(n)$
-	\end{itemize}
-	\pause[5]
-		\begin{block}{Megjegyzés}
-		Az élesebb $h < 1.44 \log_2(n)$ korlát is bizonyítható.
-		\end{block}
-\end{frame}
-
 
 \begin{frame}{Összegzés}
 	\begin{itemize}
