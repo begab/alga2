@@ -488,13 +488,15 @@ class Node {
 
 \begin{frame}{B-fák kiegyensúlyozottsága}
 	\begin{itemize}
+		\item B fákat olyan esetekben szokás használni, amikor az adatunk nem fér be a főmemóriába, azt a háttértáron tároljuk
 		\item A B-fák kiegyensúlyozottsága abból fakad, hogy minden levél azonos mélységen található, illetve, hogy minden (nemgyökér) csúcs legalább $t+1$ elágazással rendelkezik
 		\begin{itemize}
-			\item $t$ értéke a gyakorlatban nagy, ezen a kurzuson $2$-nek vesszük (hacsak más nem mondunk)
+			\item $t$-rendű B-fa $i$-edik ($i>1$) szintjén legalább $2 (t+1)^{i-2}$ csúcs és $2t (t+1)^{i-2}$ érték található \
+			\item $t$ értéke a valóságban nagy, mi ezen a kurzuson $2$-nek vesszük (hacsak mást nem mondunk)
 		\end{itemize}		
-		\item Az AVL-fánál ''kiegyensúlyozottabb'', magassága $O(\log_t (n))$
+		\item Az AVL-fánál ''kiegyensúlyozottabb'', magassága $O(\log_{{\color{red} \textbf{t}}} n)$
 		\begin{itemize}
-			\item Aszimptotikusan nincs jelentősége a logaritmus alapjának, viszont ha másodlagos háttértárról olvasunk, számíthat
+			\item Aszimptotikusan nincs jelentősége a logaritmus alapjának, viszont ha másodlagos memóriából olvasunk, számíthat
 		\end{itemize}
 	\end{itemize}
 \end{frame}
