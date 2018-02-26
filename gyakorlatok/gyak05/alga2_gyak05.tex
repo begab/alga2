@@ -7,7 +7,7 @@
 \pdfpageheight\paperheight
 \pdfpagewidth\paperwidth
 \setlength\topmargin{-1cm} \setlength\oddsidemargin{-0cm}
-\setlength\textheight{24cm} \setlength\textwidth{15.8cm}
+\setlength\textheight{25cm} \setlength\textwidth{15.8cm}
 \setlength\columnsep{0.25in}  \newlength\titlebox \setlength\titlebox{2.00in}
 \setlength\headheight{5pt}   \setlength\headsep{0pt}
 \setlength\footskip{1cm}
@@ -67,8 +67,10 @@
 	\end{tikzpicture}
 \end{figure}
 
+
 \begin{figure}[!h]
-\centering
+%\centering
+\textbf{Töröl(55)}\\
 \subfloat[fekete testvér+unokaöccsek $\rightarrow$ színezés]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -99,8 +101,8 @@
 			}
 		};
 	\end{tikzpicture}
-}
-
+}\\
+\textbf{Töröl (98)}\\
 \subfloat[fekete testvér, piros unokaöccs $\rightarrow$ forgatás]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -132,7 +134,8 @@
 \end{figure}
 
 \begin{figure}[htb]\ContinuedFloat
-\centering
+%\centering
+\textbf{Töröl(30)}\\
 \subfloat[fekete testvér, piros unokaöccs $\rightarrow$ forgatás]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -158,7 +161,7 @@
 		};
 	\end{tikzpicture}
 }
-
+\\ \textbf{Töröl(50)} \\
 \subfloat[egyedüli gyereke piros $\rightarrow$ nincs teendő]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -181,7 +184,7 @@
 		};
 	\end{tikzpicture}
 }
-
+\\ \textbf{Töröl(49)} \\
 \subfloat[piros testvér $\rightarrow$ segédforgatás]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -226,7 +229,8 @@
 			}
 		};
 	\end{tikzpicture}
-}\\
+}
+\\ \textbf{Töröl(7)} \\
 \subfloat[fekete testvér+piros unokaöccs $\rightarrow$ forgatás]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -246,7 +250,7 @@
 		};
 	\end{tikzpicture}
 }
-
+\\ \textbf{Töröl(73)}  \hfil \textbf{Töröl(34)}\\
 \subfloat[fekete testvér+unokaöccsek $\rightarrow$ átszínezés]{
 	\begin{tikzpicture}
 	\node [arn_n] {54}
@@ -315,5 +319,20 @@
 	\end{figure}
 	
 	Megoldás: az eredeti fa fekete színű csúcsait ''olvasszuk össze'' piros színű gyerekeikkel.
+	
+	Mi lenne a törlések végrehajtását követően előálló 2-3-4 fa?
+
+	\begin{figure}[!ht]
+		\centering
+		\begin{tikzpicture}
+			\tikzstyle{bnode}=[rectangle split, rectangle split parts=3, rectangle split horizontal,rectangle split ignore empty parts,draw, fill=white]
+			\tikzstyle{every node}=[bnode]
+			\node {54 \nodepart{two} \color{red}{69}}
+				child {node{\color{red}{5} \nodepart{two} 9}}
+				child {node{58 \nodepart{two} \color{red}{68}}}
+				child {node{70 \nodepart{two} \color{red}{75}}
+			};
+		\end{tikzpicture}
+	\end{figure}
 
 \end{document}

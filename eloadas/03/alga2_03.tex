@@ -563,10 +563,11 @@ class Node {
 		\item Kulcs törlése $t$ méretű csúcsból $t-1$ méretűvé teheti azt
 		\item Itt is megelőzővel helyettesítünk
 		\item Két eset lehetséges
-		\begin{itemize}
-			\item Szomszédtól kölcsönzünk, ha rendelkezik felesleggel (azaz $>t$ méretű)
-			\item Összeolvasztjuk a kritikusan kicsi csúcsot a (kölcsönadni nem tudó) szomszéddal $\Rightarrow t+(t-1)+1=2t$ méretű csúcs jön létre
-		\end{itemize}			
+		\begin{enumerate}
+			\item Szomszédtól kölcsönzünk, ha annak van feleslege ($>t$ méretű)
+			\item Összeolvasztjuk a kritikusan kicsi csúcsot a $t$ méretű szomszédjával $\Rightarrow t+(t-1)+1=2t$ méretű csúcs jön létre
+		\end{enumerate}
+		\item A kölcsönvételt preferáljuk, hiszen az $O(1)$ időben elvégezhető
 	\end{itemize}
 \end{frame}
 
