@@ -40,10 +40,10 @@
 \noindent1. Az alábbi fák közül melyekre teljesül a piros-fekete fákkal kapcsolatos összes elvárás?
 
 \begin{figure}[!h]
-\subfloat[Nem AVL fa]{
+\subfloat[Nem piros-fekete fa]{
 \begin{tikzpicture}
 \node [arn_n] {54}
-	child{ node [arn_r,sibling distance=2.2cm] {34}
+	child{ node [arn_r] {34}
 		child{ node [arn_n] {9}
 			child[missing]
 			child{ node [arn_r]  {30}}
@@ -62,7 +62,7 @@
 	};
 	\end{tikzpicture}
 }~
-\subfloat[Nem AVL fa]{
+\subfloat[Nem piros-fekete fa]{
 \begin{tikzpicture}
 \node [arn_n] {54}
 	child{ node [arn_r] {34}
@@ -84,7 +84,7 @@
 	};
 	\end{tikzpicture}
 }~
-\subfloat[AVL fa]{
+\subfloat[Piros-fekete fa]{
 \begin{tikzpicture}
 \node [arn_n] {54}
 	child{ node [arn_r] {34}
