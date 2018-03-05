@@ -363,7 +363,7 @@ class Node {
 	\begin{itemize}
 		\item $\alpha, \beta, \gamma, \delta$ egy-egy részfát jelöl
 		\item Az előző helyzettől az különbözteti meg a mostanit, hogy a beszúrt kulcs nagybátyja (a $\delta$ részfa gyökere) fekete
-		\item AVL fákhoz hasonlóan, itt is a cikk-cakkos esetben van szükség 2 forgatásra (a cikk-cakkot $\delta$-hoz viszonyítva nézzük)
+		\item AVL fákhoz hasonlóan, itt is a ''cikk-cakkos'' esetben van szükség 2 forgatásra (a cikk-cakkot $\delta$-hoz viszonyítva nézzük)
 	\end{itemize}
 	\begin{figure}
 		\subfloat[2 forgatás kell]{
@@ -420,8 +420,8 @@ class Node {
 \begin{frame}{Törlés utáni javítás átszínezéssel}
 	\begin{itemize}
 		\item Bajt az okozhat, ha kiesik egy fekete csúcs
-		\item A kieső csúcs feketeségét át kell ruházni, duplán fekete csúcsunk viszont nem maradhat
-		\item Ha a duplán fekete csúcs testvére és unokaöccsei is feketék, a nagyszülő át tudja vállalni a feketeséget
+		\item A kieső csúcs feketeségét át kell ruházni, hiszen két ''rétegnyi'' feketeségért semelyik csúcs sem lehet felelős
+		\item Ha a duplán fekete csúcs testvére és unokaöccsei is feketék, a szülő át tudja vállalni a feketeséget
 	\end{itemize}
 	\begin{columns}
 		\begin{column}{0.5\linewidth}

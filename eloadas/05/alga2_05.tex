@@ -1,0 +1,226 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[hungarian]{babel}
+\uselanguage{hungarian}
+\languagepath{hungarian}
+\deftranslation[to=hungarian]{Theorem}{T\'etel}
+\deftranslation[to=hungarian]{Example}{P\'elda}
+\deftranslation[to=hungarian]{Definition}{Defin\'ici\'o}
+%\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor,pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{subfig}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{lstlinebgrd}
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    urlcolor  = blue,
+    citecolor = blue,
+    linkbordercolor = {white},
+}
+\usepackage{alltt}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
+\usetikzlibrary{calc,chains,arrows,positioning}
+\tikzset{
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
+treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
+int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
+subtree/.style={isosceles triangle, draw=black, align=center, minimum height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
+data/.style={
+	minimum width=2em,
+	minimum height=2em,
+	draw, rectangle split,
+	rectangle split parts=2, text centered,
+}
+}
+\usetheme{Warsaw}
+\institute{Szegedi Tudományegyetem}
+\pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
+\logo{\pgfuseimage{institution-logo}}
+
+\title{Algoritmusok és adatszerkezetek II.}
+\subtitle{Kupacok}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Fapacok (Treaps)}
+	\begin{block}{Emlékeztető}
+		$n$ kulcsból álló \textbf{véletlen} építésű bináris keresőfa $h$ magasságának \textbf{várható értéke} $\log n$
+	\end{block}
+	\begin{itemize}
+		\item Adverzaliális műveleti sorrend mellett azonban $n$ magas is lehet
+	\end{itemize}
+	\begin{alertblock}{Ötlet}
+		A keresőfa,-és kupactulajdonságot egyidejűleg követeljük meg
+		\begin{enumerate}
+			\item Keresőfa tulajdonság biztosítja a kulcsok $O(h)$ kereshetőségét
+			\item Kupactulajdonság miatt $h$ \textbf{várható értékben} $\log n$
+			\begin{itemize}
+				\item<2> A kupactulajdonság ne az eltárolt kulcsokra, hanem egy \textbf{véletlenszerűen} generált kiegészítőinformációra teljesüljön!
+			\end{itemize}
+		\end{enumerate}
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Kupacok}
+   \begin{alertblock}{Felhasználásuk}
+	\begin{enumerate}
+		\item Prioritási sor megvalósításánál fontos, hogy a minimális/maximális kulcsot hatékonyan tudjuk visszaadni
+		\item Szintén fontos művelet egy adott kulcs értékének módosítása
+	\end{enumerate}
+   \end{alertblock}
+
+\pause
+   \begin{block}{Kupactulajdonság}
+   	Azt mondjuk, hogy egy fa rendelkezik a minimum (maximum) kupactulajdonsággal, ha minden $p$ csúcsának minden $q$ fiára
+   	\begin{itemize}
+   		\item $q=Nil$ vagy
+   		\item $p.kulcs < q.kulcs$ ($p.kulcs > q.kulcs$)
+   	\end{itemize}
+   \end{block}
+\end{frame}
+
+\begin{frame}{Példa maximum bináris kupacra}
+	\begin{columns}
+		\begin{column}{.3\linewidth}
+			\begin{tikzpicture}[sibling distance=2cm]
+			\node[circle,draw]{33}
+			child{
+				node[circle,draw]{22}
+				child[sibling distance=1cm]{node[circle,draw]{11}}
+				child[sibling distance=1cm]{node[circle,draw]{15}}}
+			child{node[circle,draw]{12}
+			};
+			\end{tikzpicture}
+			\begin{tabular}{|c|c|c|c|c|c|}
+				\hline
+				0&1&2&3&4&5 \\ \hline
+				--&33&22&12&11&15\\ \hline
+			\end{tabular}
+		\end{column}
+		\begin{column}{.1\linewidth}
+			{\scshape Beszúr(40)}
+		\end{column}
+		\begin{column}<2->{.5\linewidth}
+		\begin{tikzpicture}[sibling distance=2cm]
+		\node[circle,draw]{40}
+		child{
+			node[circle,draw]{22}
+			child[sibling distance=1cm]{node[circle,draw]{11}}
+			child[sibling distance=1cm]{node[circle,draw]{15}}}
+		child{node[circle,draw]{33}
+			child[sibling distance=1cm]{node[circle,draw]{12}}
+			child[missing]
+		};
+		\end{tikzpicture}
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+			\hline
+			0&1&2&3&4&5&6 \\ \hline
+			--&40&22&33&11&15&12\\ \hline
+			\end{tabular}
+		\end{column}
+	\end{columns}
+	\begin{block}{Bináris kupac}
+		\textbf{Teljes} bináris fa, melyre teljesül a kupactulajdonság. \\
+		$\Rightarrow$ mivel legfeljebb egy belső pontnak lehet 2-nél kevesebb fia, így egyszerűen egy tömbbel implementálhatjuk
+	\end{block}
+\end{frame}
+
+\begin{frame}{Fapac példa}
+\begin{columns}
+	\begin{column}{.3\linewidth}
+		\begin{tikzpicture}
+		\node[data]{15 \nodepart{two} \textcolor{red}{80}}
+		child{
+			node[data]{12 \nodepart{two} \textcolor{red}{74}}
+			child{node[data]{11 \nodepart{two} \textcolor{red}{21}}}
+			child[missing]}
+		child{node[data]{22 \nodepart{two} \textcolor{red}{61}}
+			child[missing]
+			child{node[data]{33 \nodepart{two} \textcolor{red}{10}}}
+		};
+		\end{tikzpicture}
+	\end{column}
+
+	\begin{column}{.7\linewidth}
+		\begin{itemize}
+			\item A kulcsok keresőfa tulajdonság szerint helyezkednek el
+			\item A véletlen felépítést az \textcolor{red}{extra adattag} eredményezi
+			\item A kiegyensúlyozott fáknál megszokott módon állítjuk helyre a megkövetelt tulajdonságokat (pl.~{\scshape(Beszúr(27, \textcolor{red}{100}))})
+		\end{itemize}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Vissza a kupacokhoz}
+\begin{tabular}{ll}
+$n$ elemű kupacban hogy keresnénk meg a maximális elemet? & \only<2>{O(1)} \\
+	És egy adott kulcs rákövetkezőjét? & \only<2>{O(m+n)} \\
+	Egy $n$ és egy $m$ kulcsból álló kupacot miként egyesítenénk? & \only<2>{O(m+n)} \\
+\end{tabular}
+\begin{block}<2>{Kérdés}
+Lehetne hatékonyabban is?
+\end{block}
+\end{frame}
+\end{document}
