@@ -1,0 +1,107 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[hungarian]{babel}
+\uselanguage{hungarian}
+\languagepath{hungarian}
+\deftranslation[to=hungarian]{Theorem}{T\'etel}
+\deftranslation[to=hungarian]{Example}{P\'elda}
+\deftranslation[to=hungarian]{Definition}{Defin\'ici\'o}
+%\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor,pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{subfig}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{lstlinebgrd}
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    urlcolor  = blue,
+    citecolor = blue,
+    linkbordercolor = {white},
+}
+\usepackage{alltt}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
+\usetikzlibrary{calc,chains,arrows,positioning}
+\tikzset{
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
+treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
+int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
+subtree/.style={isosceles triangle, draw=black, align=center, minimum height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
+data/.style={
+	minimum width=2em,
+	minimum height=2em,
+	draw, rectangle split,
+	rectangle split parts=2, text centered,
+}
+}
+\usetheme{Warsaw}
+\institute{Szegedi Tudományegyetem}
+\pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
+\logo{\pgfuseimage{institution-logo}}
+
+\title{Algoritmusok és adatszerkezetek II.}
+\subtitle{Amotrizált költségelemzés, Fibonacci kupacok}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\end{document}
