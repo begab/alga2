@@ -104,4 +104,163 @@ data/.style={
 
 \maketitle
 
+\begin{frame}{Amortizált költségelemzés}
+\begin{itemize}
+	\item A legrosszabb költségelemzés túl pesszimista tud lenni
+	\item Amortizált költségelemzésnél az adatszerkezetek `életútját' vizsgáljuk
+	\item Lehetnek költséges műveleteink, ha azok \textit{kellően} ritkák
+	\begin{itemize}
+		\item Pl.~dinamikusan bővülő tömb
+	\end{itemize}
+\end{itemize}
+\begin{alertblock}<2->{Fontos}
+	Ennél az elemzésnél	a véletlennek nincs szerepe: az egyes műveletek átlagos 
+	költségére adunk felső korlátot a \textit{legrosszabb esetben}.
+\end{alertblock}
+\begin{block}<3>{Fő megközelítések}
+	\begin{enumerate}
+		\item Összesítéses elemzés
+		\item Könyvelési módszer
+		\item Potenciálmódszer
+	\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Bináris számláló növelése}
+\begin{columns}
+	\begin{column}{.6\linewidth}
+		\begin{alltt}
+{\scshape Növel}(A) \{
+   i=0
+   while i < A.hossz és A[i] = 1 \{
+      A[i] = 0
+      i = i+1
+   \}
+   if i < A.hossz \{
+      A[i] = 1
+   \}
+ \}
+		\end{alltt}
+	\end{column}
+	\begin{column}<2>{.4\linewidth}
+		\begin{tabular}{c|cccc|c}
+			i & 3 & 2 & 1 & 0 & $\sum$ktg. \\ \hline
+			  & 0 & 0 & 0 & 0 & 0 \\
+			  & 0 & 0 & 0 & \color{red}{\textbf{1}} & 1 \\
+			  & 0 & 0 & \color{red}{\textbf{1}} & \color{red}{0} & 3 \\
+			  & 0 & 0 & 1 & \color{red}{\textbf{1}} & 4 \\
+			  & 0 & \color{red}{\textbf{1}} & \color{red}{0} & \color{red}{0} & 
+			  7 \\
+			  & 0 & 1 & 0 & \color{red}{\textbf{1}} & 8 \\
+			  & 0 & 1 & \color{red}{\textbf{1}} & \color{red}{0} & 10 \\
+			  & 0 & 1 & 1 & \color{red}{\textbf{1}} & 11 \\
+			  & \color{red}{\textbf{1}} & \color{red}{0} & \color{red}{0} & 
+			  \color{red}{0} & 15 \\
+			  & 1 & 0 & 0 & \color{red}{\textbf{1}} & 16 \\
+			  & 1 & 0 & \color{red}{\textbf{1}} & \color{red}{0} & 18 \\
+			  & 1 & 0 & 1 & \color{red}{\textbf{1}} & 19 \\
+			  & 1 & \color{red}{\textbf{1}} & \color{red}{0} & \color{red}{0} & 
+			  22 \\
+			  & 1 & 1 & 0 & \color{red}{\textbf{1}} & 23 \\
+			  & 1 & 1 & \color{red}{\textbf{1}} & \color{red}{0} & 25 \\
+			  & 1 & 1 & 1 & \color{red}{\textbf{1}} & 26 \\
+		\end{tabular}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Amortizált költségelemzés -- összesítéses elemzés}
+\begin{block}{Összesítéses elemzés}
+	$n$ hosszú műveletsorra állítunk föl $T(n)$ felső korlátot \\
+	$\rightarrow$ a műveletek átlagos költsége $T(n)/n$
+\end{block}
+
+\begin{example}
+	$k$ bites számlálón {\scshape Növel} művelet $n$-szeri végrehajtása: 
+	$O(nk)$ \\
+	Helyes, de nem éles korlát, mivel az $i$ pozíciójú bit csak minden $2^i$ 
+	számú végrehajtás után változik. \\	
+\end{example}
+
+\begin{block}<3>{Élesebb korlát}
+	$$\sum_{i=0}^{k-1} \Big\lfloor \frac{n}{2^i} \Big\rfloor < n 
+	\sum_{i=0}^{\infty} \frac{1}{2^i} = 2n = O(n) $$ \\ \pause
+	Vagyis a {\scshape Növel} művelet amortizált költsége $O(n)/n=O(1)$
+\end{block}
+\end{frame}
+
+\begin{frame}{Amortizált költségelemzés -- könyvelési módszer}
+\begin{itemize}
+	\item Különböző műveletekre különböző költséget számolunk el
+	\begin{itemize}	
+	\item A $i$-edik műveletre elszámolt $\hat{c}_i$ \textit{amortizációs 
+	költség} tetszőlegesen eltérhet annak $c_i$ \textbf{tényleges 
+	költség}étől
+	\item<2-> Azonban minden $n$ hosszú műveletsorra teljesüljön, hogy
+\begin{alertblock}{}
+	$$\sum_{i=1}^{n} \hat{c}_i \geq \sum_{i=1}^{n} c_i,$$
+	azaz a mindenkori hitelegyenleg $\Big(\sum\limits_{i=1}^{n} 
+	\hat{c}_i - c_i \Big)$ nemnegatív
+\end{alertblock}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Könyvelési módszer használata -- példa}
+\begin{itemize}
+	\item A {\rmfamily\scshape Növel} művelet működése során könyveljünk el 2 
+	egységnyi költséget egy bit 1-re állításához
+	\item A költség fele a majdani visszaállításra félretett ``hitel''
+	\item<2> A {\rmfamily\scshape Növel} minden hívása során 1 bitet állítunk 
+	1-re
+	\begin{itemize}
+		\item $n$ végrehajtás $\Rightarrow 2n$ összköltség $\Rightarrow O(1)$ 
+		költség/végrehajtás
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Amortizált költségelemzés -- Potenciálmódszer}
+\begin{itemize}
+	\item Az adatszerkezet $i$ pillanatbeli állapotát jelöljük $D_i$-vel
+	\item Vezessük be a $\Phi: \mathbb{N} \rightarrow \mathbb{R}$ 
+	\textbf{ponteciálfüggvény}t, ami az adatszerkezet egy $D_i$ állapotához 
+	rendel egy \textbf{potenciál}t
+	\item Az amortizációs költség legyen $\hat{c}_i = c_i + \Phi(D_i) - 
+	\Phi(D_{i-1})$
+	\begin{block}<2->{$n$ hosszú műveletsorra a teljes \textit{teleszkopikus 
+	összeg}}
+		$$\sum\limits_{i=1}^n \hat{c}_i = \Phi(D_n) - \Phi(D_0) + \sum_{i=1}^n 
+		c_i $$
+	\end{block}
+	\item<3-> Olyan potenciálfüggvényt keresünk, melyre $\Phi(D_n) \geq 
+	\Phi(D_0)$, 
+	mivel ekkor nyilvánvalóan $\sum\limits_{i=1}^n \hat{c}_i \geq 
+	\sum\limits_{i=1}^n c_i$ is teljesül
+	\begin{block}<4>{Kényelmes megoldás}
+		$\Phi(D_0)=0$, és lássuk be, hogy $\Phi(D_i)\geq 0$
+	\end{block}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Amortizált költségelemzés -- Példa}
+\begin{itemize}
+	\item Legyen $\Phi(D_i) = b_i$ a {\rmfamily\scshape Növel} művelet 
+	$i$-szeri alkalmazására a számlálóban szereplő 1 értékű bitek száma
+	\item Jelölje $t_i$ a {\rmfamily\scshape Növel} művelet $i$-edik 
+	végrehajtásakor $1$-ről $0$-ra változó bitek számát (vagyis $c_i\leq t_i+1$)
+	\begin{itemize}
+		\item $b_i \leq b_{i-1}-t_i+1 \Rightarrow \Phi(D_i) - \Phi(D_{i-1}) 
+		\leq 1-t_i$
+		\item Így az amortizációs költség $\hat{c_i}\leq 
+		c_i+1-t_i=t_i+1+1-t_i=2$
+	\end{itemize}
+	\begin{block}{Észrevétel}
+		Mivel $\Phi(D_0)=0$ és minden $\Phi(D_i)\geq 0$, így az $n$ művelet  
+		amortizált költségének összege felső korlátja a tényleges 
+		összköltségnek ($O(n)$)
+	\end{block}
+\end{itemize}
+\end{frame}
+
 \end{document}
