@@ -20,7 +20,7 @@
 
 \usepackage{subfig}
 \date{}
-\title{5. gyakorlat -- Bináris és binomiális kupacok}
+\title{6. gyakorlat -- Bináris és binomiális kupacok}
 \begin{document}
 
 \maketitle
@@ -73,10 +73,12 @@ majd kulcscserékkel helyreállítunk.
 \vspace{.5cm}
 
 \noindent 2. Egyesítsük az alábbi két minimális binomiális kupacot.
-        \begin{figure}[!ht]
-        \centering
-        \subfloat[]{
-        \begin{tikzpicture}
+Az egyesített kupacra végezzük el a {\scshape Sorba(5)}, {\scshape Sorbol()} 
+műveleteket, végül módosítsuk a 14-es kulcsot 3-ra, illetve a 7-es kulcsot 2-re.
+\begin{figure}[!ht]
+\centering
+\subfloat[]{
+	\begin{tikzpicture}
         [-,thick,every node/.style={shape=circle,inner 
         sep=1pt,draw,thick,minimum width=0.6cm}]
         \node (a) at (0,0) {9};
@@ -93,10 +95,11 @@ majd kulcscserékkel helyreállítunk.
         {
           (\startNode) edge[-,thick] (\endNode)
         };
-        \end{tikzpicture}
-        } \hfil
-        \subfloat[]{
-        \begin{tikzpicture}
+	\end{tikzpicture}
+}
+\hfil
+\subfloat[]{
+	\begin{tikzpicture}
         [-,thick,every node/.style={shape=circle,inner 
         sep=1pt,draw,thick,minimum width=0.6cm}]
         \node (a) at (0,0) {6};
@@ -116,8 +119,315 @@ majd kulcscserékkel helyreállítunk.
         {
           (\startNode) edge[-,thick] (\endNode)
         };
-        \end{tikzpicture}
-        }
-        \end{figure}
+	\end{tikzpicture}
+}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+	\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+			sep=1pt,draw,thick,minimum width=0.6cm}]
+		\node (a) at (0,0) {9};
+		\node (a2) at (2,0) {6};
+		\node (b) at (4,0) {10} child {node {12}};
+
+		\node (c1) at (6,0) {7}
+			child {node {14}
+				child {node at (0,0) {21}}
+			}
+			child {node at (-.75,0) {11}
+		};
+		\node (c2) at (8,0) {1}
+			child {node {4}
+				child {node at (0,0) {12}}
+			}
+			child {node at (-.75,0) {23}
+		};
+		\path
+		\foreach \startNode/\endNode in {a/a2, a2/b, b/c1, c1/c2}
+		{
+			(\startNode) edge[-,thick] (\endNode)
+		};
+	\end{tikzpicture}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+		sep=1pt,draw,thick,minimum width=0.6cm}]
+	\node (c1) at (4,0) {6}
+		child {node {10}
+			child {node at (0,0) {12}}
+		}
+	child {node at (-.75,0) {9}
+	};
+	
+	\node (c2) at (6,0) {7}
+	child {node {14}
+		child {node at (0,0) {21}}
+	}
+	child {node at (-.75,0) {11}
+	};
+	\node (c3) at (8,0) {1}
+	child {node {4}
+		child {node at (0,0) {12}}
+	}
+	child {node at (-.75,0) {23}
+	};
+	\path
+	\foreach \startNode/\endNode in {c1/c2, c2/c3}
+	{
+		(\startNode) edge[-,thick] (\endNode)
+	};
+	\end{tikzpicture}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+		sep=1pt,draw,thick,minimum width=0.6cm}]
+	\node (c1) at (4,0) {6}
+	child {node {10}
+		child {node at (0,0) {12}}
+	}
+	child {node at (-.75,0) {9}
+	};
+	
+	\node (c3) at (8,0) {1}
+	child {node (c2) {7}
+		child {node {14}
+			child {node at (0,0) {21}}
+		}
+		child {node at (-.75,0) {11}
+		}
+	}
+	child {node at (-.75,0) {4}
+		child {node {12}}
+	}
+	child {node at (-1.5,0) {23}
+	};
+	\path
+	\foreach \startNode/\endNode in {c1/c3}
+	{
+		(\startNode) edge[-,thick] (\endNode)
+	};
+	\end{tikzpicture}
+	\caption{Egyesített kupac}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+		sep=1pt,draw,thick,minimum width=0.6cm}]
+	\node (a) at (2,0) {5};
+	\node (c1) at (4,0) {6}
+	child {node {10}
+		child {node at (0,0) {12}}
+	}
+	child {node at (-.75,0) {9}
+	};
+	
+	\node (c3) at (8,0) {1}
+	child {node (c2) {7}
+		child {node {14}
+			child {node at (0,0) {21}}
+		}
+		child {node at (-.75,0) {11}
+		}
+	}
+	child {node at (-.75,0) {4}
+		child {node {12}}
+	}
+	child {node at (-1.5,0) {23}
+	};
+	\path
+	\foreach \startNode/\endNode in {a/c1,c1/c3}
+	{
+		(\startNode) edge[-,thick] (\endNode)
+	};
+	\end{tikzpicture}
+	\caption{{\scshape Beszúr(5)} művelet elvégzését követően}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\subfloat[]{
+		\begin{tikzpicture}
+		[-,thick,every node/.style={shape=circle,inner 
+			sep=1pt,draw,thick,minimum width=0.6cm}]
+		\node (a) at (0,0) {5};
+		%%
+		\node (b) at (2,0) {6}
+		child {node {10}
+			child {node at (0,0) {12}}
+		}
+		child {node at (-.75,0) {9}
+		}
+		;
+		\path
+		\foreach \startNode/\endNode in {a/b}
+		{
+			(\startNode) edge[-,thick] (\endNode)
+		};
+		\end{tikzpicture}
+	}
+	\hfil
+	\subfloat[]{
+		\begin{tikzpicture}
+		[-,thick,every node/.style={shape=circle,inner 
+			sep=1pt,draw,thick,minimum width=0.6cm}]
+		\node (a) at (0,0) {23};
+		\node (b) at (2,0) {4} child {node {12}};
+		\node (c) at (4,0) {7}
+			child {node {14}
+				child {node at (0,0) {21}}
+			}
+			child {node at (-.75,0) {11}
+		};
+		\path
+		\foreach \startNode/\endNode in {a/b, b/c}
+		{
+			(\startNode) edge[-,thick] (\endNode)
+		};
+		\end{tikzpicture}
+	}
+\caption{A minimum kulcs eltávolítása után egyesítendő binomiális kupacok.}
+\end{figure}
+
+\begin{figure}
+\centering
+\subfloat{
+	\begin{tikzpicture}
+[-,thick,every node/.style={shape=circle,inner 
+	sep=1pt,draw,thick,minimum width=0.6cm}]
+\node (a) at (0,0) {5};
+\node (a2) at (2,0) {23};
+\node (b) at (4,0) {4} child {node {12}};
+
+\node (c1) at (6,0) {6}
+child {node {10}
+	child {node at (0,0) {12}}
+}
+child {node at (-.75,0) {9}
+};
+
+\node (c2) at (8,0) {7}
+child {node {14}
+	child {node at (0,0) {21}}
+}
+child {node at (-.75,0) {11}
+};
+\path
+\foreach \startNode/\endNode in {a/a2, a2/b, b/c1, c1/c2}
+{
+	(\startNode) edge[-,thick] (\endNode)
+};
+\end{tikzpicture}
+}\\
+\subfloat{
+	\begin{tikzpicture}
+[-,thick,every node/.style={shape=circle,inner 
+	sep=1pt,draw,thick,minimum width=0.6cm}]
+\node (c1) at (4,0) {4}
+child {node {5}
+	child {node at (0,0) {23}}
+}
+child {node at (-.75,0) {12}
+};
+
+\node (c3) at (8,0) {6}
+child {node (c2) {7}
+	child {node {14}
+		child {node at (0,0) {21}}
+	}
+	child {node at (-.75,0) {11}
+	}
+}
+child {node at (-.75,0) {10}
+	child {node {12}}
+}
+child {node at (-1.5,0) {9}
+};
+\path
+\foreach \startNode/\endNode in {c1/c3}
+{
+	(\startNode) edge[-,thick] (\endNode)
+};
+\end{tikzpicture}
+}
+	\caption{A binomiális kupacok egyesítése}
+\end{figure}
+
+\begin{figure}
+	\centering
+		\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+		sep=1pt,draw,thick,minimum width=0.6cm}]
+	\node (c1) at (4,0) {4}
+	child {node {5}
+		child {node at (0,0) {23}}
+	}
+	child {node at (-.75,0) {12}
+	};
+	
+	\node (c3) at (8,0) {3}
+	child {node (c2) {6}
+		child {node {7}
+			child {node at (0,0) {21}}
+		}
+		child {node at (-.75,0) {11}
+		}
+	}
+	child {node at (-.75,0) {10}
+		child {node {12}}
+	}
+	child {node at (-1.5,0) {9}
+	};
+	\path
+	\foreach \startNode/\endNode in {c1/c3}
+	{
+		(\startNode) edge[-,thick] (\endNode)
+	};
+	\end{tikzpicture}
+	\caption{$14\rightarrow 3$ után}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	[-,thick,every node/.style={shape=circle,inner 
+		sep=1pt,draw,thick,minimum width=0.6cm}]
+	\node (c1) at (4,0) {4}
+	child {node {5}
+		child {node at (0,0) {23}}
+	}
+	child {node at (-.75,0) {12}
+	};
+	
+	\node (c3) at (8,0) {2}
+	child {node (c2) {3}
+		child {node {6}
+			child {node at (0,0) {21}}
+		}
+		child {node at (-.75,0) {11}
+		}
+	}
+	child {node at (-.75,0) {10}
+		child {node {12}}
+	}
+	child {node at (-1.5,0) {9}
+	};
+	\path
+	\foreach \startNode/\endNode in {c1/c3}
+	{
+		(\startNode) edge[-,thick] (\endNode)
+	};
+	\end{tikzpicture}
+	\caption{$7\rightarrow 2$ után}
+\end{figure}
 
 \end{document}
