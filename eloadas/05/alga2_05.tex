@@ -351,11 +351,10 @@ class Node {
     \node (H) [box,anchor=north,minimum width=8em,fill=orange!30] at (A.south) 
     {fokszam};
     \node (D) [box,anchor=south,minimum width=8em] at (A.north) {apa};
-    \node (B) [box,anchor=north west,minimum width=4em] at (H.south west) 
-    {gyerek};
-    \node (C) [box,anchor=north east,minimum width=4em] at (H.south east) 
-    {testver};
-    \coordinate (E) at (0,2);
+    \node (B) [box,anchor=north west,minimum width=4em,fill=orange!30] at 
+    (H.south west) {gyerek};
+    \node (C) [box,anchor=north east,minimum width=4em,fill=orange!30] at 
+    (H.south east) {testver};
     \coordinate (E) at (0,2);
     \node[below left = 1cm of B] (F) {};
     \node[right = 2em of C] (G) {};
@@ -370,7 +369,10 @@ class Node {
 \end{frame}
 
 \begin{frame}{Binomiális kupacok szerveződése}
-\includegraphics[width=\linewidth]{binom_heap}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{binom_heap}
+\end{figure}
 
 \framenote{Forrás: CLRS: Új algoritmusok 19.3~ábrája}
 \end{frame}
@@ -411,12 +413,12 @@ class Node {
 			$H_1$-ben és $H_2$-ben található binomiális fákat
 			\begin{itemize}
 				\item Legfeljebb $\log{n_1}+1 + \log{n_2}+1 \leq 2 \log{n} 
- +1=O(\log{n})$ hosszú listát kapunk
+ +2=O(\log{n})$ hosszú listát kapunk
 			\end{itemize}
-			\item 2 darab $f$ fokszámú binomiális fából egy darab $f+1$ 
+			\item 2 darab $k$ fokszámú binomiális fából egy darab $k+1$ 
 			fokszámú binomiális fa hozható létre (ennek ideje $O(1)$)
 			\item Számoljuk föl az összefűzött gyökérlistában a megegyező 
-			fokszámú binomiális fákat
+			fokszámú binomiális fákat $\Rightarrow O(\log{n})$
 		\end{itemize}
 	\end{itemize}
 \end{frame}
@@ -615,8 +617,9 @@ Kupacműveletek legrosszabb esetbeli viselkedése
 		{\rmfamily\scshape Beszúr}    & $O(\log{n})$ & $O(\log n)$ 
 		\footnote{amortizált költségben 
 		$O(1)$} \\
-	{\rmfamily\scshape KulcsotCsökkent} & 	$O(\log{n})$ & $O(\log{n})$ \\
-	{\rmfamily\scshape Egyesít} & $O(n)$ & $O(\log{n})$
+		{\rmfamily\scshape KulcsotCsökkent} & 	$O(\log{n})$ & $O(\log{n})$ \\
+		{\rmfamily\scshape Egyesít} & $O(n)$ & $O(\log{n})$ \\
+		{\rmfamily\scshape Töröl} & $O(\log{n})$ & $O(\log{n})$
 		\\
 	\end{tabular}
 \end{table}

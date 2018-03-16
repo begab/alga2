@@ -15,6 +15,10 @@
 \usepackage{subfig}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{nccfoots}
+\newcommand{\framenote}[1]{%
+	\Footnotetext{}{\emph{#1}}% Print footnote text
+}
 \usepackage{lstlinebgrd}
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
@@ -34,7 +38,8 @@
     \foreach \range in \bt@rangelist {%
         \afterassignment\bt@getrangeb%
         \bt@rangea=0\range\relax%
-        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
+        }%
         \ifnum\result=1\relax%
             \breakforeach%
             \global\let\bt@inrange\@firstoftwo%
@@ -59,7 +64,8 @@
 %
 % \btLstHL<overlay spec>{range list}
 %
-% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one 
+%overlay spec match.
 % 
 \newcommand<>{\btLstHL}[1]{%
   \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
@@ -80,10 +86,14 @@
 \usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
 \usetikzlibrary{calc,chains,arrows,positioning}
 \tikzset{
-  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum height=2.5em},
-treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, font=\sffamily, text width=1em},
-int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text width = 1.6cm, text height = 0.3cm},
-subtree/.style={isosceles triangle, draw=black, align=center, minimum height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum 
+  height=2.5em},
+treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, 
+font=\sffamily, text width=1em},
+int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text 
+width = 1.6cm, text height = 0.3cm},
+subtree/.style={isosceles triangle, draw=black, align=center, minimum 
+height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
 data/.style={
 	minimum width=2em,
 	minimum height=2em,
@@ -211,13 +221,17 @@ data/.style={
 	\item A {\rmfamily\scshape Növel} művelet működése során könyveljünk el 2 
 	egységnyi költséget egy bit 1-re állításához
 	\item A költség fele a majdani visszaállításra félretett ``hitel''
-	\item<2> A {\rmfamily\scshape Növel} minden hívása során 1 bitet állítunk 
+	\item<2-> A {\rmfamily\scshape Növel} minden hívása során 1 bitet állítunk 
 	1-re
 	\begin{itemize}
 		\item $n$ végrehajtás $\Rightarrow 2n$ összköltség $\Rightarrow O(1)$ 
 		költség/végrehajtás
 	\end{itemize}
 \end{itemize}
+\begin{alertblock}{Kérdés}
+	A {\rmfamily\scshape Csökkent} műveletet bevezetését követően is maradna az
+	$O(1)$ amortizált költség? \hfill \pause Nem, $O(k)$ lenne.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{Amortizált költségelemzés -- Potenciálmódszer}
@@ -262,5 +276,106 @@ data/.style={
 	\end{block}
 \end{itemize}
 \end{frame}
+
+\begin{frame}{Fibonacci kupacok}
+\begin{itemize}
+	\item Binomiális kupachoz hasonló (annál kötetlenebbül strukturált), 
+	amortizált 	értelemben jobban viselkedő	adatszerkezet
+	\begin{itemize}
+		\item A kupacot alkotó fák \emph{nem} rendezettek
+		\item A csúcsok gyerekei kétirányú ciklikus listával		
+		összekapcsoltak
+		\item min[H] pointer a gyökérlista minimális kulcsú csúcsára mutat
+		\item A fák sorrendje a gyökérlistában tetszőleges
+		\item A kupacban találhatók megjelölt csúcsok
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Megjelölt csúcsok}
+\begin{itemize}
+	\item Egy csúcs megjelölt, ha aktuális pozícióján már vesztette el gyerekét
+	\begin{itemize}
+		\item Létrehozáskor jelöletlenek a csúcsok, és egy csúcs 
+	jelöletlen lesz, ha egy másik csúcs gyerekévé válik (megváltozik az apja)
+	\end{itemize}
+\end{itemize}
+\begin{block}<2->{A potenciálfüggvény}
+	$$\Phi(H) = t(H) + 2m(H)$$
+	\begin{itemize}
+		\item $t(H)$ a kupac gyökérlistájában található fák száma
+		\item $m(H)$ a kupacban található megjelölt csúcsok száma
+	\end{itemize}
+\end{block}
+
+\begin{alertblock}<3>{Észrevétel}
+	A potenciál végig nemnegatív, így a teljes amortizált költség felső 
+	korlátja a műveletsorozat teljes aktuális költségének felső korlátja is
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Fibonacci kupacok implementációja}
+\begin{columns}
+	\begin{column}{.6\textwidth}
+\begin{lstlisting}[
+linebackgroundcolor={
+\btLstHL<1->{4-8}
+}]
+class Node {
+    Object kulcs;
+    Node *apa;
+    int fokszam;
+    boolean megjelolt;
+    Node *gyerek;
+    Node *bal;
+    Node *jobb;
+}
+\end{lstlisting}
+		\begin{block}<2>{Emlékeztető}
+			A megjelöltség azt jelöli, hogy a csúcs vesztette-e el gyerekét 
+			mióta egy másik csúcs gyerekévé vált
+		\end{block}
+	\end{column}
+	
+	\begin{column}{.4\textwidth}
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
+			\node (A) [box,minimum width=8em] {kulcs};
+			\node (J) [box,anchor=north,minimum width=8em,fill=orange!30] at 
+			(A.south) {megjelolt};
+			\node (H) [box,anchor=north,minimum width=8em,fill=orange!30] at 
+			(J.south) {fokszam};
+			\node (D) [box,anchor=south,minimum width=8em] at (A.north) {apa};
+			\node (B) [box,anchor=north west,minimum width=2em,fill=orange!30] 
+			at (H.south west) {bal};
+			\node (I) [box,anchor=north,minimum width=4em,fill=orange!30] 
+at (H.south) {gyerek};
+			\node (C) [box,anchor=north east,minimum width=2em,fill=orange!30] 
+at (H.south east) {jobb};
+			\coordinate (E) at (0,2);
+			\node[below left = 1cm of B] (F) {};
+			\node[right=2em of C] (G) {};
+			\node[left=2em of B] (K) {};
+			\node[below=2em of I] (L) {};
+			\path (D) edge [->] (E);
+			\path (B) edge [->] (K);
+			\path (C) edge [->] (G);
+			\path (I) edge [->] (L);
+			\end{tikzpicture}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Fibonacci kupacok szerveződése}
+\begin{figure}
+	\centering
+	\includegraphics[width=.9\linewidth]{fibo}
+\end{figure}
+
+\framenote{Forrás: CLRS: Új algoritmusok 20.1~ábrája}
+\end{frame}
+
 
 \end{document}
