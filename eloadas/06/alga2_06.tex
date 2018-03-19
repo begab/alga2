@@ -294,10 +294,10 @@ data/.style={
 
 \begin{frame}{Megjelölt csúcsok}
 \begin{itemize}
-	\item Egy csúcs megjelölt, ha aktuális pozícióján már vesztette el gyerekét
+	\item Egy csúcs megjelölt, ha már vesztett el gyereket azóta, hogy egy 
+	másik csúcs gyerekévé vált
 	\begin{itemize}
-		\item Létrehozáskor jelöletlenek a csúcsok, és egy csúcs 
-	jelöletlen lesz, ha egy másik csúcs gyerekévé válik (megváltozik az apja)
+		\item Létrehozásukkor jelöletlenek a csúcsok
 	\end{itemize}
 \end{itemize}
 \begin{block}<2->{A potenciálfüggvény}
@@ -377,5 +377,95 @@ at (H.south east) {jobb};
 \framenote{Forrás: CLRS: Új algoritmusok 20.1~ábrája}
 \end{frame}
 
+\begin{frame}{Bináris vs. binomiális vs. Fibonacci kupac}
+Kupacműveletek legrosszabb esetbeli viselkedése
+\begin{table}
+	\begin{tabular}{l|ccc}
+		Művelet   &   Bináris   &   Binomiális  & Fibonacci\footnote{amortizált 
+		költségek}   \\ \hline
+		{\rmfamily\scshape Min-keres} & $O(1)$ &  $O(\log{n})$ & $O(1)$ \\
+		{\rmfamily\scshape Sorbol-min} & $O(\log{n})$ &  $O(\log{n})$ & 
+		$O(\log{n})$\\
+		{\rmfamily\scshape Beszúr}    & $O(\log{n})$ & $O(\log n)$ 
+		\footnote{amortizált költségben 
+			$O(1)$} & $O(1)$\\
+		{\rmfamily\scshape KulcsotCsökkent} & 	$O(\log{n})$ & $O(\log{n})$ & 
+		$O(1)$\\
+		{\rmfamily\scshape Egyesít} & $O(n)$ & $O(\log{n})$ & $O(1)$ \\
+		{\rmfamily\scshape Töröl} & $O(\log{n})$ & $O(\log{n})$ & $O(\log{n})$
+		\\
+	\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{A Fibonacci kupacok viselkedése}
+\begin{itemize}
+	\item Remek választás, ha tudjuk, hogy a {\rmfamily\scshape Sorbol-min} és 
+	{\rmfamily\scshape Töröl} műveleteket keveset használjuk
+	\begin{itemize}
+		\item Bizonyos gráfalgoritmusok (pl.~Dijkstra) esetében a 
+		{\rmfamily\scshape KulcsotCsökkent} metódus alkalmazása dominál
+	\end{itemize}
+	\end{itemize}
+\begin{alertblock}<2->{Ha nem hajtunk végre {\rmfamily\scshape Sorbol-min} és 
+{\rmfamily\scshape Töröl} műveleteket}
+	Egy (fokszám alapján) rendezetlen ''binomiális 
+	kupacot'' kapunk \\
+	$\rightarrow \log{n}$ a kupacbeli csúcsok maximális fokszámának 
+	felső korlátja
+\end{alertblock}
+\begin{block}<3>{{\rmfamily\scshape Sorbol-min} és {\rmfamily\scshape Töröl} 
+műveletek végrehajtása esetén}
+	$O(\log{n})$ (pontosabban 
+	$\log_\phi{n}$\footnote{$\phi=\frac{1+\sqrt{5}}{2}$}) a kupacbeli csúcsok 
+	maximális fokszámának felső korlátja $\rightarrow$ innen jön a 
+	Fibonacci-kupac elnevezés
+\end{block}
+\end{frame}
+
+\begin{frame}{$O(1)$ idejű műveletek}
+\begin{block}{{\rmfamily\scshape Egyesít} és {\rmfamily\scshape Beszúr}}
+	$H_1$ és $H_2$ Fibonacci kupacok egyesítésekor a kupacok gyökérlistáit 
+	összefűzzük, (min[H] aktualizálásán túl) \textbf{más teendőnk nincs}
+\end{block}
+\begin{block}{{\rmfamily\scshape Min-keres}}
+	min[H] explicit tárolásából adódóan $O(1)$
+\end{block}
+\end{frame}
+
+\begin{frame}{Minimális kulcs kivágása}
+  \begin{itemize}
+  	\item Ez az a pont, amikor próbáljuk a binomiális kupachoz hasonlóvá tenni 
+  	a Fibonacci kupacunkat
+  	\begin{enumerate}
+  		\item min[H] által meghatározott csúcsot eltávolítjuk a gyökérlistából
+  		\item min[H] gyerekeit a gyökérlistába delegáljuk
+  		\item Összevonjuk a gyökérlistában szereplő azonos fokszámú fákat
+  	\end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Kulcs értékének csökkentése}
+	\begin{enumerate}
+		\item Ha a kulcs csökkentett értéke túl kicsi, akkor a csúcsot kivágjuk 
+		és a gyökérlistába helyezzük
+		\item A kivágott csúcs szülejét (ha az nem gyökérlistabeli) megjelöltté 
+		tesszük
+		\item Amennyiben egy már megjelölt csúcs vesztené el egy újabb 
+		gyerekét, úgy azt is rekurzívan a gyökérlistába visszük (megjelöltségét 
+		eltávolítjuk)
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Összegzés}
+\begin{itemize}
+	\item Amortizált költségelemzéssel az adatszerkezetek hosszú távú 
+	legrosszabb esetbeli viselkedését modellezhetjük
+	\item Amortizált költségelemzés szempontjából a Fibonacci-kupac a megismert 
+	leghatékonyabb kupac
+	\item Egyes gráfalgoritmusok implementálásához kifejezetten hasznos 
+	választás lehet
+\end{itemize}
+\end{frame}
 
 \end{document}
