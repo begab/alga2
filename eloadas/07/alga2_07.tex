@@ -1,0 +1,182 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[hungarian]{babel}
+\uselanguage{hungarian}
+\languagepath{hungarian}
+\deftranslation[to=hungarian]{Theorem}{T\'etel}
+\deftranslation[to=hungarian]{Example}{P\'elda}
+\deftranslation[to=hungarian]{Definition}{Defin\'ici\'o}
+%\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemesplit}
+\usepackage{pgf,pgffor,pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{subfig}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{nccfoots}
+\newcommand{\framenote}[1]{%
+	\Footnotetext{}{\emph{#1}}% Print footnote text
+}
+\usepackage{lstlinebgrd}
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
+        }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one 
+%overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    urlcolor  = blue,
+    citecolor = blue,
+    linkbordercolor = {white},
+}
+\usepackage{alltt}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
+\usetikzlibrary{calc,chains,arrows,positioning}
+\tikzset{
+  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum 
+  height=2.5em},
+treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, 
+font=\sffamily, text width=1em},
+int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text 
+width = 1.6cm, text height = 0.3cm},
+subtree/.style={isosceles triangle, draw=black, align=center, minimum 
+height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
+data/.style={
+	minimum width=2em,
+	minimum height=2em,
+	draw, rectangle split,
+	rectangle split parts=2, text centered,
+}
+}
+\usetheme{Warsaw}
+\institute{Szegedi Tudományegyetem}
+\pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
+\logo{\pgfuseimage{institution-logo}}
+
+\title{Algoritmusok és adatszerkezetek II.}
+\subtitle{Geometriai algoritmusok}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Alapfogalmak}
+\begin{definition}
+	A $P_3=\begin{bmatrix} x_{3} \\	y_{3} \end{bmatrix}$ pontot 
+	$P_1=\begin{bmatrix} 
+	x_{1} \\	y_{1} \end{bmatrix}$ és 
+	$P_2=\begin{bmatrix} x_{2} \\	y_{2} \end{bmatrix}$ pontok \textbf{konvex 
+	kombináció}jának nevezzük, amennyiben $x_3=(1-\alpha) x_1 + \alpha x_2$, 
+	valamint $y_3=(1-\alpha) y_1 + \alpha y_2$ teljesül valamely $0 \leq \alpha 
+	\leq 1$-ra
+\end{definition}
+\begin{definition}
+	$\overline{P_1P_2}$ szakasz a $P_1$ és $P_2$ pontokból konvex 
+	kombinációinak halmaza
+\end{definition}
+\begin{alertblock}{Megjegyzés}
+	Ha a pontok sorrendje is számít, irányított szakaszról beszélünk, és 
+	$\overrightarrow{P_1P_2}$ módon jelöljük \\
+	$\vec{p}$-vel $\overrightarrow{OP}$-t, vagyis az $O$ 
+	origóból a $P$-be menő irányított szakaszt (vektort) jelöljük
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{A keresztszorzat és a forságirány}
+
+\begin{block}{$P_1 \times P_2$ keresztszorzata}
+	$\det\Bigg(\begin{bmatrix} x_{1} & x_{2} \\	y_1 & y_{2} 
+	\end{bmatrix}\Bigg) = x_1y_2-x_2y_1 = -P_2 \times P_1$
+\end{block}
+
+\begin{block}{Megjegyzés}
+	$P_1 \times P_2$ megadja az $O$, $P_1$, $P_2$, $P_1+P_2$ koordinátákkal 
+	rendelkező paralelogramma előjeles területét
+\end{block}
+\begin{columns}
+	\begin{column}{.1\linewidth}
+		\begin{figure}
+			\begin{tikzpicture}
+				\draw[<->] (0,0)--(2,0) node[right]{$x$};
+				\draw[<->] (0,0)--(0,2) node[above]{$y$};
+				\draw node[anchor=east] {O};
+				\draw[blue,-stealth](0,0)--(.4,1.2) 
+				node[anchor=south]{$P_1$};
+				\draw[red,-stealth](0,0)--(1.6,.6) 
+					node[anchor=north]{$P_2$};
+				\draw[red,dashed](1.6,.6)--(2,1.8);
+				\draw[blue,dashed](.4,1.2)--(2,1.8) node[anchor=south]
+				{\color{black}$P_1+P_2$};
+				\only<2>{
+					\draw[black,-stealth](0.745,0.279)--node[right]{m}(.4,1.2);
+					\node at (0.85,0.15) {$P$};
+				}
+			\end{tikzpicture}
+		\end{figure}
+	\end{column} \hfill
+	\begin{column}{.6\linewidth}
+		\begin{block}{}
+			
+		\end{block}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+
+
+\end{document}
