@@ -546,7 +546,8 @@ class Node {
 						\tikzstyle{bnode}=[rectangle split, rectangle split parts=4, rectangle split horizontal,rectangle split ignore empty parts,draw, fill=white]
 						\tikzstyle{every node}=[bnode]
 						\tikzstyle{level 1}=[sibling distance=3cm,level distance=1cm]
-						\node {22 \nodepart{two} 65  \nodepart{three} \textcolor{red}{85}}
+						\node {22 \nodepart{two} 65  \nodepart{three} 
+						\textcolor{red}{80}}
 							child {node{3  \nodepart{two} 19 }}
 							child {node{26 \nodepart{two} 35 \nodepart{three} 58}}
 							child {node{76 \nodepart{two} 78}}
@@ -558,7 +559,7 @@ class Node {
 	\end{example}
 \end{frame}
 
-\begin{frame}{B-fák tulajdonságainak fenntartása -- méret alul csordulása}
+\begin{frame}{B-fák tulajdonságainak fenntartása -- méret alulcsordulása}
 	\begin{itemize}
 		\item Kulcs törlése $t$ méretű csúcsból $t-1$ méretűvé teheti azt
 		\item Itt is megelőzővel helyettesítünk
