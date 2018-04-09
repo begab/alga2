@@ -14,7 +14,6 @@
 \pgfplotsset{compat=1.15}
 \usepackage{subfig}
 \usepackage{xcolor}
-\usepackage{listings}
 \usepackage{nccfoots}
 \newcommand{\framenote}[1]{%
 	\Footnotetext{}{\emph{#1}}% Print footnote text
@@ -81,26 +80,9 @@
     linkbordercolor = {white},
 }
 \usepackage{alltt}
-\usepackage{tikz}
+\usepackage{tikz,tkz-euclide}
 \usetikzlibrary{trees}
 \usetikzlibrary{shapes,shapes.geometric,shapes.multipart}
-\usetikzlibrary{calc,chains,arrows,positioning}
-\tikzset{
-  box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum 
-  height=2.5em},
-treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, 
-font=\sffamily, text width=1em},
-int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text 
-width = 1.6cm, text height = 0.3cm},
-subtree/.style={isosceles triangle, draw=black, align=center, minimum 
-height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
-data/.style={
-	minimum width=2em,
-	minimum height=2em,
-	draw, rectangle split,
-	rectangle split parts=2, text centered,
-}
-}
 \usetheme{Warsaw}
 \institute{Szegedi Tudományegyetem}
 \pgfdeclareimage[height=0.55cm]{institution-logo}{../szte_logo}
@@ -136,14 +118,23 @@ data/.style={
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{A keresztszorzat és a forságirány}
+\begin{frame}{A keresztszorzat}
 
 \begin{block}{$P_1 \times P_2$ keresztszorzata}
 	$\det\Bigg(\begin{bmatrix} x_{1} & x_{2} \\	y_1 & y_{2} 
-	\end{bmatrix}\Bigg) = x_1y_2-x_2y_1 = -P_2 \times P_1$
+	\end{bmatrix}\Bigg) = x_1y_2-x_2y_1 = P_1 \times P_2 = -P_2 \times P_1$
 \end{block}
 
 \begin{block}{Megjegyzés}
+	A keresztszorzat valójában háromdimenziós fogalom: egy 
+	$\overrightarrow{p_1}$-re és $\overrightarrow{p_2}$-re 
+	merőleges, velük jobbsodrású rendszert alkotó vektor, melynek hossza
+	$\lvert x_1 y_2 - x_2 y_1 \rvert$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Forgásirány}
+\begin{block}{Keresztszorzat mint előjeles terület}
 	$P_1 \times P_2$ megadja az $O$, $P_1$, $P_2$, $P_1+P_2$ koordinátákkal 
 	rendelkező paralelogramma előjeles területét
 \end{block}
@@ -161,22 +152,148 @@ data/.style={
 				\draw[red,dashed](1.6,.6)--(2,1.8);
 				\draw[blue,dashed](.4,1.2)--(2,1.8) node[anchor=south]
 				{\color{black}$P_1+P_2$};
-				\only<2>{
+				%\only<2>{
 					\draw[black,-stealth](0.745,0.279)--node[right]{m}(.4,1.2);
 					\node at (0.85,0.15) {$P$};
-				}
+				%}
 			\end{tikzpicture}
 		\end{figure}
 	\end{column} \hfill
 	\begin{column}{.6\linewidth}
-		\begin{block}{}
-			
-		\end{block}
+		\begin{itemize}
+			\item $\mathbf{P_1 \times P_2 < 0 \Rightarrow P_1}$\textbf{-ből 
+			jobbra fordulva érjük el} $\mathbf{P_2}$\textbf{-t}
+			\item $P_1 \times P_2 > 0 \Rightarrow P_1$-ből balra fordulva érjük 
+			el $P_2$-t
+			\item $P_1 \times P_2 = 0 \Rightarrow P_1$ és $P_2$ kollineáris
+		\end{itemize}
 	\end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{Merre fordul a következő szakasz?}
+\begin{itemize}
+	\item $\overline{P_0P_1}$ és $\overline{P_1P_2}$ 
+	szakaszokat folyamatosan bejárva merre kell fordulni $P_1$ pontban?
+	\item Az előzőekben lényegében az origó viselkedett $P_0$-ként
+\end{itemize}
+
+\begin{block}<2>{Ötlet: tegyünk úgy, mintha $P_0$ lenne az origó}
+	$(P_1-P_0) 
+	\times (P_2-P_0) = \det\Bigg(\begin{bmatrix} x_1 - x_0  & x_2 - x_0 \\	y_1 
+	- y_0 & y_2 - 
+	y_0 
+	\end{bmatrix}\Bigg)$ % = (x_1-x_0)(y_2-y_0)-(x_2-x_0)(y_1-y_0)$
+\end{block}
+
+\begin{itemize}
+	\item<2> Szemléletesen: $P_1$-ből és $P_2$-ből $P_0$-t kivonva $P_0$ 
+	központúvá tesszük a koordinátarendszerünket
+\end{itemize}
 
 \end{frame}
 
+\begin{frame}{Szakasz átfogása}
 
+\begin{block}{Átfogó szakasz}
+Egy $\overline{P_1P_2}$ szakasz átfog egy egyenest, ha a $P_1$ pont az egyenes
+egyik oldalára, $P_2$ pont pedig a másik oldalára esik
+\end{block}
+\begin{figure}
+			\begin{tikzpicture}[scale=.7]
+	\tkzInit[xmax=5,ymax=3,xmin=0,ymin=0]
+	\tkzAxeXY
+	\node (E) at (5.5,2.5) {};
+	\node (F) at (-.5,.5) {};	
+	\node[outer sep=0pt,circle, fill,inner 
+	sep=2pt,label={above:$P_1$}] (C) at (2,3) {};
+	\node[outer sep=0pt,circle, fill,inner sep=2pt, 
+	label={above:$P_2$}] (D) at (5,1) {};
+	
+    \draw[dashed,red] (E)--(F);
+	\draw[line width=.1em] (C)--(D);
+	\end{tikzpicture}
+\end{figure}
+
+\begin{block}<2>{Átfedés meglétének eldöntése}
+	Egy (kevéssé hatékony) lehetőség, ha az egyenes egyenletét kiszámolva 
+	döntünk $P_1$ és $P_2$ relatív helyzetéről \\
+	\textbf{Támaszkodjunk helyette a forgásirányokra!}
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Egymást metsző szakaszok}
+\begin{block}{Szükségesség}
+	$\overline{CD}$ úgy metszheti $\overline{AB}$ szakaszt, ha $\overline{CD}$ 
+	átfogja az $\overline{AB}$ szakaszra illeszkedő egyenest.
+\end{block}
+
+\begin{columns}
+	\begin{column}{.5\linewidth}
+		\begin{tikzpicture}[scale=.8]
+		\tkzInit[xmax=5,ymax=3,xmin=0,ymin=0]
+		\tkzAxeXY
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=2pt,label={above:$A$}] (A) at (1,1) {};
+		\node[outer sep=0pt,circle, fill,inner sep=2pt, 
+		label={above:$B$}] (B) at (4,2) {};
+		\node (E) at (5.5,2.5) {};
+		\node (F) at (-.5,.5) {};	
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=2pt,label={above:$C$}] (C) at (2,3) {};
+		\node[outer sep=0pt,circle, fill,inner sep=2pt, 
+		label={above:$D$}] (D) at (5,1) {};
+		
+		\only<2>{\draw[dashed,red] (E)--(F)};
+		\draw[line width=.1em] (A)--(B);
+		\draw[line width=.1em] (C)--(D);
+		\end{tikzpicture}
+	\end{column}
+	\begin{column}<2>{.5\linewidth}
+		\begin{tikzpicture}[scale=.8]
+		\tkzInit[xmax=5,ymax=3,xmin=0,ymin=0]
+		\tkzAxeXY
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=2pt,label={above:$A$}] (A) at (1,1) {};
+		\node[outer sep=0pt,circle, fill,inner sep=2pt, 
+		label={below:$B$}] (B) at (3.25,1.75) {};
+		\node (E) at (5.5,2.5) {};
+		\node (F) at (-.5,.5) {};	
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=2pt,label={above:$C$}] (C) at (2,3) {};
+		\node[outer sep=0pt,circle, fill,inner sep=2pt, 
+		label={above:$D$}] (D) at (5,1) {};
+		
+		\only<2>{\draw[dashed,red] (E)--(F)};
+		\draw[line width=.1em] (A)--(B);
+		\draw[line width=.1em] (C)--(D);
+		\end{tikzpicture}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Metszés vizsgálata}
+\begin{columns}
+	\begin{column}{.6\linewidth}
+		\begin{alltt}
+			{\scshape Forgásirány}(X, Y, Z) \{
+			   return (Y-X)\(\times\)(Z-X)
+			\} \vfill
+			{\scshape MetszőSzakaszok}(A, B, C, D) \{
+			   d1 = {\scshape Forgásirány}(A, B, C)
+			   d2 = {\scshape Forgásirány}(A, B, D)
+			   d3 = {\scshape Forgásirány}(C, D, A)
+			   d4 = {\scshape Forgásirány}(C, D, B)
+			   return d1 * d2 < 0 és d3*d4 < 0
+			\}
+		\end{alltt}
+	\end{column}
+	\begin{column}<2>{.4\linewidth}
+		Ezzel csak ``valódi'' metszéseket találunk meg, a szakaszra 
+		illeszkedő végpontú szakaszt nem kezeltük így
+	\end{column}
+\end{columns}
+\end{frame}
 
 \end{document}
