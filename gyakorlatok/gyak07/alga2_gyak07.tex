@@ -229,7 +229,7 @@ kulcsot 11-re.
 	\node (b) at (2,0) {15} child{node{16} child{node {42} child{node{75}}} 
 		child{node{81}}} 
 	child{node[fill=black!40]{30}} 
-	child{node{75}};
+	child{node{23}};
 	\node[draw=none,above of=b] (b1){min};
 	\draw [->] (b1) to(b);
 	\path
@@ -240,7 +240,7 @@ kulcsot 11-re.
 	\end{tikzpicture}
 	}
     \hfill
-   	\subfloat[{\scshape Sorból}() után]{
+   	\subfloat[{\scshape KulcsCsökkent}(42,11) után]{
    			\begin{tikzpicture}
    		[-,thick,every node/.style={shape=circle,inner 
    		sep=1pt,draw,thick,minimum 
@@ -250,7 +250,7 @@ kulcsot 11-re.
    		\node (b) at (2,0) {15} child{node[fill=black!40]{16} 
    		child[missing] child{node{81}}} 
    		child{node[fill=black!40]{30}} 
-   		child{node{75}};
+   		child{node{23}};
    		\node[draw=none,above of=c] (c1){min};
    		\draw [->] (c1) to(c);
    		\path
@@ -262,7 +262,7 @@ kulcsot 11-re.
    	}
 \end{figure}
 
-\noindent Az utolsó {\scshape Sorból}() művelet után mennyi a Fibonacci 
+\noindent Az utolsó művelet elvégzése után mennyi lesz a Fibonacci 
 kupac potenciálfüggvényének értéke? \hfil $\Phi(H) = t(H) + 2m(H) = 3 + 2*2=7$
 
 \end{document}
