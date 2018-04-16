@@ -18,8 +18,9 @@
 \usepackage{tkz-euclide}
 \tikzset{
   treenode/.style = {align=center,inner sep=0pt, text width=1.5em, circle, draw=black, inner sep=0pt, text centered, font=\sffamily},
-  arn_n/.style = {treenode, white, font=\sffamily\bfseries, draw=black, fill=black},% arbre rouge noir, noeud noir
-  arn_r/.style = {treenode, red, draw=red, very thick},% arbre rouge noir, noeud rouge
+  arn_n/.style = {treenode, white, font=\sffamily\bfseries, draw=black, 
+  fill=black},
+  arn_r/.style = {treenode, red, draw=red, very thick},
   level/.style={sibling distance = 2cm, level distance = 1cm}
 }
 
@@ -34,7 +35,7 @@
 \noindent 1. Döntsük el az $A=[0,4], B=[2,2]$, valamint a $C=[0,2], D=[3,4]$ 
 végpontokkal adott szakaszokról, hogy metszik-e egymást?
 
-		\begin{tikzpicture}[scale=.5]
+		\begin{tikzpicture}
 \tkzInit[xmax=4,ymin=1,ymax=4,xmin=0,ymin=0]
 \tkzAxeXY
 \node[outer sep=0pt,circle, fill,inner 
@@ -124,7 +125,9 @@ $\overline{EF}=[(4,3),(8,7)]$ \hfill $\overline{GH}=[(4,7),(7,5)]$ \hfill
 $\overline{IJ}=[(5,3),(7,3)]$
 
 \textbf{Két szakasz összehasonlítása adott $x$ koordináta mentén}\\
-$f$ szakasz fölötte van $g$-nek $x$-nél ($f \succ_x g$), ha az $f$ szakasz $y$-koordinátája nagyobb a $g$ szakasz $y$-koordinátájánál az $x$-koordináta mentén.
+$s_1$ szakasz fölötte van $s_2$-nek $x$-nél ($s_1 \succ_x s_2$), ha az $s_1$ 
+szakasz $y$-koordinátája nagyobb az $s_2$ szakasz $y$-koordinátájánál az adott 
+$x$ koordináta mentén.
 Pl. $\overline{GH} \succ_4 \overline{EF}$.
 
 \begin{figure}[h]
@@ -222,5 +225,82 @@ A szakaszokat tartalmazó kiegyensúlyozott (itt most AVL\footnote{Hf.:piros-fek
   
   \end{enumerate}
 \end{enumerate}
+
+\noindent 4. Határozzuk meg a (1,2), (1,4), (3,3), (4,6), (5,0), (5,3), (5,5), 
+(7,5) pontok konvex burkát Graham-féle pásztázással!
+
+1. lépés: csúcsok polárszög szerinti rendezése: A,E,F,C,H,G,D,B.
+2. lépés: a konvex burok csúcsit nyilvántartó verem fenntartása.
+
+\begin{tikzpicture}
+\tkzInit[xmax=7,ymin=0,ymax=6,xmin=0,ymin=0]
+\tkzAxeXY
+   \node[outer sep=0pt,circle, fill,inner 
+   sep=1.5pt,label={[fill=white]left:$A$}] (A) at (1,2) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$B$}] (B) at (1,4) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]left:$C$}] 
+(C) at (3,3) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$D$}] (D) at (4,6) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]north 
+east:$E$}] 
+(E) at (5,0) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$F$}] (F) at (5,3) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]left:$G$}] 
+(G) at (5,5) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$H$}] (H) at (7,5) {};
+
+   \draw (A)--(E);
+   \draw (E)--(H);
+   \draw (H)--(D);
+   \draw (D)--(B);
+   \draw (B)--(A);
+\end{tikzpicture}
+
+\noindent 5. Döntsük el az előző feladat ponthalmazához tartozó zárt nemmetsző 
+poligonjához képest az $I=(6,4)$ pont belül vagy kívül helyezkedik-e el!
+
+A zárt nem metsző poligon a csúcsok polárszög szerinti rendezésének 
+sorrendjében való összekötésével megkaphatjuk.
+Válasszunk egy garantáltan poligonon kívüli $K$ pontot, és vizsgáljuk 
+$\overline{IK}$-nak a poligon oldalaival való metszéspontjainak az $m$ számát.
+
+\begin{tikzpicture}
+\tkzInit[xmax=7,ymin=0,ymax=6,xmin=0,ymin=0]
+\tkzAxeXY
+\node[outer sep=0pt,circle, fill,inner 
+sep=1.5pt,label={[fill=white]left:$A$}] (A) at (1,2) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$B$}] (B) at (1,4) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]left:$C$}] 
+(C) at (3,3) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$D$}] (D) at (4,6) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]north 
+	east:$E$}] 
+(E) at (5,0) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$F$}] (F) at (5,3) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]left:$G$}] 
+(G) at (5,5) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$H$}] (H) at (7,5) {};
+\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+label={[fill=white]right:$I$}] (I) at (6,4) {};
+\node (K) at (0,0) {};
+
+\draw (A)--(E);
+\draw (E)--(F);
+\draw (F)--(C);
+\draw (C)--(H);
+\draw (H)--(G);
+\draw (G)--(D);
+\draw (D)--(B);
+\draw (B)--(A);
+\draw[color=red] (I)--(K);
+\end{tikzpicture}
 
 \end{document}
