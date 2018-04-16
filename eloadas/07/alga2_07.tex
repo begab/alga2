@@ -469,21 +469,30 @@ $CH(Q)$-ra természetesen igaz, hogy $CH(Q) \subseteq Q$.
 \begin{frame}[fragile]{Konvex burok -- Graham-féle pásztázás}
 \begin{alltt}
 {\scshape{Graham-pásztázás}}(S) \{
-  P0 = minimális y-koordinátájú Q-beli pont
-  P=[P1 , P2, \ldots, Pm] Q pontjainak P0 körüli polárszöges rendezése
-  S={\scshape{VermetLétesít}}()
-  Verembe(P0, S)
-  Verembe(P1, S)
-  Verembe(P2, S)
+  P0 = minimális y-koordinátájú Q-beli pont (több ilyen
+  esetén válasszuk az x-koordináta szerint is minimálisat)
+  P = {\scshape{PolárszögSzerintRendez}}(Q)
+  S = {\scshape{VermetLétesít}}()
+  {\scshape{Verembe}}(P0, S)
+  {\scshape{Verembe}}(P1, S)
+  {\scshape{Verembe}}(P2, S)
   for i=3 to m \{
-    while {\scshape{Legfelső-alatti(S)}}, {\scshape{Legfelső(S)}} és Pi pontok
-szöge nem fordul balra \{
+    while {\scshape{Legfelső-alatti(S)}}, {\scshape{Legfelső(S)}} és Pi
+          pontok szöge nem fordul balra \{
       {\scshape{Veremből(S)}}
     \}
-    Verembe(Pi, S)
+    {\scshape{Verembe}}(Pi, S)
   \}
   return S
+\}
 \end{alltt}
+\end{frame}
+
+\begin{frame}{Polárszög szerinti rendezés}
+\begin{block}{Pontok helyzetének polárkoordinátákkal történő megadása}
+$P$ pontot $(x,y)$ koordinátapár helyett egy referenciaponttól vett távolság 
+és egy referenciairánnyal bezárt szög párosaként adjuk meg
+\end{block}
 \end{frame}
 
 \begin{frame}{Legtávolabbi pontpár megtalálása}
