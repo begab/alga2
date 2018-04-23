@@ -96,7 +96,7 @@
 \maketitle
 
 \begin{frame}{Mintaillesztés problémája}
-$T=[t_0 t_1 \ldots t_n]$ input tartalmazza-e a $P=[p_0 p_1 \ldots p_m]$ 
+$T=[t_1 \ldots t_n]$ input tartalmazza-e a $P=[p_1 \ldots p_m]$ 
 mintát? Ha igen, mely inputpozíció(k)tól/eltolási érték(ek)től 
 kezdődően?\\
 Tipikusan $n \gg m$
@@ -134,8 +134,8 @@ Milyen hatékonyabb módszerek vannak?
  	\item $Q$-t válasszk $\{q_0, q_1, \ldots q_m \}$-nak
  	\item $q_i$ állapot jelentése: az input aktuális pozíciójáig a minta első 
  	$i$ karaktere illeszkedik
-	\item $q_m$ állapotba elérve elmondható, hogy megtaláltuk a $P=[p_0 p_1 
-	\ldots p_m]$ minta egy $T$-beli előfordulását
+	\item $q_m$ állapotba elérve elmondható, hogy megtaláltuk a $P$-nek egy 
+	$T$-beli előfordulását
  \end{itemize}
 \end{frame}
 
@@ -167,7 +167,7 @@ Kitöltése és tárolása egyaránt $O(m \lvert \Sigma \rvert)$ költségű
 	(q1) edge [color=red]node {a} (q2)
 	edge[loop above] node {b} (q1)
 	(q2) edge node {b} (q3)
-	edge [loop below,color=red] node {a} (q0)
+	edge [bend left, color=red] node {a} (q0)
 	(q3) edge [color=red] node {a} (q4)
 	edge [bend right=60]  node {b} (q1)
 	(q4) edge [bend left=60,color=red] node {a} (q0)
