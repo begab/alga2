@@ -12,7 +12,7 @@ eloadas/03/avl
 *.cb
 *.cb2
 .*.lb
-gyak1*
+gyak1[3-9]
 
 ## Intermediate documents:
 *.dvi
