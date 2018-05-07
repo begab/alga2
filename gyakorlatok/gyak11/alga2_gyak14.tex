@@ -1,0 +1,37 @@
+\documentclass[12pt]{article}
+\usepackage[hungarian]{babel}
+\selectlanguage{hungarian}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{blkarray}
+
+\title{14. gyakorlat -- Korlátozás és szétválasztás módszere}
+
+\begin{document}
+
+\maketitle
+
+\noindent 1. Vegyük az következő hozzárendelési feladatot\footnote{A B\&B módszeren túl Magyar módszerrel (aka.~Kuhn–Munkres algoritmus) is megoldható a probléma $O(n^3)$ időben.}. Adott $n$ munkás és $n$ elvégzendő feladat. Minden munkás más-más költségen végez el egy feladatot. Rendeljük hozzá az elvégzendő feladatokat úgy a munkásokhoz, hogy azokat a legkisebb összköltséggel végezzék el. Például a
+
+\[
+C = \begin{blockarray}{ccccc}
+a & b & c & d \\
+\begin{block}{(cccc)l}
+  6 & \underline{2} & 8 & 7 & I. \\
+  2 & 1 & 5 & \underline{4} & II.\\
+  \underline{1} & 3 & 2 & 5 & III. \\
+  4 & 2 & \underline{1} & 3 & IV. \\
+\end{block}
+\end{blockarray}
+ \]
+
+\noindent költségmátrix esetében az $a,b,c,d$ feladatokat rendre a III., I., IV., valamint II. munkás végezze el $1+2+1+4=8$ összköltséggel, melyről belátható, hogy egy minimális hozzárendelést eredményez.
+
+Fontos kikötés, hogy minden munkásnak \textbf{pontosan} egy feladatot kell elvégezzen, tehát pl.~a $c$ és a $d$ feladatok nem kerülhetnek egyidejűleg kiosztásra a IV. munkás számára.
+
+A B\&B használata során a tényleges $f$ (össz)költségfüggvényt optimista módon (alulról) becslő $h$ függvényre van szükség. $h\le f^*$ értékét egy részhozzárendeléshez határozzuk meg mohó módon, vagyis a még ki nem osztott munkákra vonatkozóan átmenetileg tegyük fel, hogy nem kell teljesüljön az egy munkás-egy feladat megkötés, vagyis a ki nem osztott munkák közül egy munkásra több feladat is kiosztható.
+
+Tehát pl.~$h$ kezdeti értéke $h=1+1+1+3=6$ (minden oszlop minimumának összegét véve), azaz akárhogy is rendeljük hozzá a feladatokat a munkásokhoz, az összköltség legalább $6$ lesz.
+
+A B\&B a feladatot leíró állapotteret a $h$ függvény figyelembe vétele mellett járja be/szűri meg.
+\end{document}
