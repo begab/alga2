@@ -286,7 +286,9 @@ void \textcolor{green}{post}order(x)\{
 		\item Olyan bináris fa, amelynek minden belső csúcsának 2 fia van
 	\end{itemize}
 	\begin{block}{Fában lévő kulcsok száma}
-		A fa $i$-edik szintjén $2^i$ csúcs található \\ \pause $\Rightarrow$ a fában $n=\sum\limits_{i=0}^{h} 2^i=2^{h+1}$ csúcsot található\footnote{bizonyítás teljes indukcióval} \\
+		A fa $i$-edik szintjén $2^i$ csúcs található \\ \pause $\Rightarrow$ a 
+		fában $n=\sum\limits_{i=0}^{h} 2^i=2^{h+1}-1$ csúcs 
+		van\footnote{bizonyítás teljes indukcióval} \\
 		\textbf{Állítás}: $h$ magas fában $O(2^h)$ csúcs található \\ \pause
 		\textbf{Megfordítva}: $n$ csúcsból álló fa magassága $\Omega(\log n)$
 	\end{block}
