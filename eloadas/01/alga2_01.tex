@@ -8,6 +8,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{beamerthemesplit}
+\usepackage{subfig}
 \usepackage{listings}
 \usepackage{hyperref}
 \hypersetup{
@@ -59,10 +60,10 @@
 
 \begin{frame}{Gyakorlati követelmények}
 	\begin{itemize}
-		\item 2 db ZH (ápr.~9. és máj.~7.): 40-40 pont (min.~18 pont/ZH)
-		\item Kvízek: 4 darab 5-5 pontos Coospace kvíz (min.~0 pont)
+		\item 2 db ZH (márc.~18. és máj.~6.): 40-40 pont (min.~16 pont/ZH)
+		\item Kvízek: 4 darab 5-5 pontos Coospace kvíz (min.~2 pont/kvíz)
 		\item Pluszpontok (minimumba nem számítanak bele)
-		\item Javítás: a nagy ZH-k bármelyike javítható az utolsó előadáson
+		\item Javítás: a rosszabbul sikerült ZH javítható az utolsó előadáson
 	\end{itemize}
 	\pause
 	\begin{table}
@@ -80,9 +81,12 @@
 
 \begin{frame}{Gyakorlati követelmények -- Coospace kvízek}
 	\begin{itemize}
-		\item Coospace-en az előadás színterében lesznek közzétéve (de a gyakorlati teljesítés részét képezik)
-		\item Közzététel: \textcolor{red}{febr.~26., márc.~19}, \textcolor{blue}{ápr.~16, ápr.~30}
-		\item Beadási határidő: \textcolor{red}{ápr.~9}, \textcolor{blue}{máj.~14} az előadás kezdetéig
+		\item Coospace-en az \textbf{előadás} színterében lesznek közzétéve (de 
+		a gyakorlati teljesítés részét képezik)
+%		\item Közzététel: \textcolor{red}{febr.~26., márc.~19}, 
+%\textcolor{blue}{ápr.~16, ápr.~30}
+		\item Beadási határidő: \textcolor{red}{márc.~15.}, 
+		\textcolor{blue}{máj.~3.} 23:59:59ig
 		\item 3 kitöltés/kvíz, amelyek közül a legjobbat vesszük figyelembe
 		\pause
 		\item Tesztenként a 10 leggyorsabb hibátlan kitöltőnek pluszpont jár
@@ -92,22 +96,39 @@
 \begin{frame}{Követelmények -- kollokvium}
 	\begin{itemize}
 		\item A gyakorlat sikeres teljesítése esetén kollokvium tehető
-		\item 10 db 5 pontos elméleti és gyakorlati kiskérdéssel
+		\item 8 db 5 pontos elméleti és gyakorlati kiskérdéssel
 		\item Pluszpontok (minimumba nem számítanak bele)
-		\item Elővizsga az utolsó előadáson (vizsgaalkalomnak számít)
+		\item Amennyiben a gyakorlati jegy >=4, elővizsga tehető az utolsó 
+		előadáson (vizsgaalkalomnak számít)
 	\end{itemize}
 	\pause	
 		\begin{table}
 		\centering
 		\begin{tabular}{r@{}r@{ }l|l}
 			\multicolumn{4}{c}{Kollokviumi jegy} \\ \hline
-			{[}&0--26)  & pont & elégtelen (1) \\
-			{[}&26--32) & pont & elégséges (2) \\
-			{[}&32--38) & pont & közepes (3) \\
-			{[}&38--44) & pont & jó (4) \\
-			{[}&44--$\infty$) & pont & jeles (5)
+			{[}&0--20)  & pont & elégtelen (1) \\
+			{[}&20--25) & pont & elégséges (2) \\
+			{[}&25--30) & pont & közepes (3) \\
+			{[}&30--35) & pont & jó (4) \\
+			{[}&35--$\infty$) & pont & jeles (5)
 		\end{tabular}
 	    \end{table}
+\end{frame}
+
+\begin{frame}{A vizsga értékelése (Forrás: London András honlapja)}
+\begin{itemize}
+	\item Negatívumok
+	\begin{itemize}
+		\item Nyelvileg értelmetlen mondatok.
+		\item Bőbeszédűség: Ha egy oldal átbogarászása után egy sornyi (vagy 
+		esetleg 0 bitnyi) információt találok annak nem fogok örülni.
+		\item Kritikus helyen olvashatatlanná váló leírás, kritikus helyen 
+		zavarossá váló leírás: Az írásos vizsga jegye a leírtakért jár; 
+		elhiszem, hogy "a hallgató jól tudja, de akkor úgy is kell leírni".
+	\end{itemize}
+\pause
+\includegraphics[height=9em]{573777}
+\end{itemize}
 \end{frame}
 
 \begin{frame}{A félév során érintett főbb témakörök}
@@ -126,6 +147,11 @@
 		\begin{itemize}
 			\item Thomas H. Cormen -- Charles E. Leiserson -- Ronald L. Rivest -- Clifford Stein: \textbf{Új algoritmusok}.  Kiadó: SCOLAR
 		\end{itemize}
+	\begin{figure}
+		\subfloat{
+			\includegraphics[height=9em]{uj_algoritmusok}
+		}
+	\end{figure}
 	\end{itemize}
 	\begin{itemize}
 		\item \href{https://www.hackerrank.com/contests}{Hackerrank versenyek}
@@ -363,6 +389,48 @@ $h$ magas fa esetén $O(h)$
  		\end{tikzpicture}
  	\end{figure}
   \end{example}
+\end{frame}
+
+\begin{frame}{Beszúrás -- példa}
+Milyen fát eredményez az 5,6,7,9,16 kulcsok beszúrása?
+	\begin{figure}
+	\centering
+	\begin{tikzpicture}%[level/.style={sibling distance = 2cm, level distance = 
+	%1cm}]
+\node[treenode] {5}
+child[missing]
+child{ node[treenode] {6}
+child[missing]
+child{ node[treenode] {7}
+	child[missing]
+	child{ node[treenode] {9}
+		child[missing]
+		child{ node[treenode] {16}}
+	}
+}
+};
+	\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Beszúrás -- példa}
+Tegyük föl, hogy > szerint 7>9>6>5>16. Most hogy néz ki a fa?
+\pause
+\begin{figure}
+	\centering
+	\begin{tikzpicture}%[level/.style={sibling distance = 2cm, level distance = 
+	%1cm}]
+	\node[treenode] {5}
+	child{node[treenode] {16}}
+	child{ node[treenode] {6}
+		child[missing]
+		child{ node[treenode] {7}
+			child{ node[treenode] {9}}
+			child[missing]
+		}
+	};
+	\end{tikzpicture}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Elem törlése bináris keresőfából}
