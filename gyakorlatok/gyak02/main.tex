@@ -1,3 +1,4 @@
+
 \documentclass[12pt]{article}
 \usepackage[hungarian]{babel}
 \selectlanguage{hungarian}
@@ -45,21 +46,21 @@ Emlékeztető: a rendezettminta-fa olyan bináris keresőfa, amely minden $p$ gy
 \begin{figure}[!h]
 \centering
   \begin{tikzpicture}[level/.style={sibling distance = 9cm/#1},level distance = 1.cm]
-    \node[data]{\aries \nodepart{two} }
-        child{ node[data]{\taurus \nodepart{two}}
-    	    child{ node[data]{\gemini \nodepart{two}}}
-            child{ node[data]{\cancer \nodepart{two}}
-                child{ node[data]{\leo \nodepart{two}}
-                       child{ node[data]{\virgo \nodepart{two}}}
+    \node[data]{\includegraphics[height=1cm]{kenguru.png} \nodepart{two} }
+        child{ node[data]{\includegraphics[height=0.75cm]{turtle.png} \nodepart{two}}
+    	    child{ node[data]{\includegraphics[height=0.75cm]{frog.png} \nodepart{two}}}
+            child{ node[data]{\includegraphics[height=0.75cm]{wolf.jpg} \nodepart{two}}
+                child{ node[data]{\includegraphics[height=0.75cm]{ozike.jpg} \nodepart{two}}
+                       child{ node[data]{\includegraphics[height=0.75cm]{hare.jpg} \nodepart{two}}}
                        child[missing]                    
                 }
-                child{ node[data]{\libra \nodepart{two}}}
+                child{ node[data]{\includegraphics[height=0.75cm]{delphin.jpg} \nodepart{two}}}
             }
         }
-        child{ node[data]{\scorpio \nodepart{two}}
-            child{ node[data]{\sagittarius \nodepart{two}}}
-            child{ node[data]{\capricornus \nodepart{two}}
-                child{ node[data]{\aquarius \nodepart{two}}}
+        child{ node[data]{\includegraphics[height=0.75cm]{horse.png} \nodepart{two}}
+            child{ node[data]{\includegraphics[height=0.75cm]{lion.jpg} \nodepart{two}}}
+            child{ node[data]{\includegraphics[height=0.75cm]{giraffe.jpg} \nodepart{two}}
+                child{ node[data]{\includegraphics[height=0.75cm]{bear.jpg} \nodepart{two}}}
                 child[missing]
             }
         };
@@ -77,45 +78,47 @@ Megjegyzés: a valóságban persze nem ''utólag'', fabejárást használva hat�
 \begin{itemize}
 \item 6 rangú elemet
 \begin{alltt}
-RangKeres(\aries, 6)
-RangKeres(\taurus, 6)
-RangKeres(\cancer, 4)
-RangKeres(\libra, 1)
+RangKeres(\includegraphics[height=0.4cm]{kenguru.png}, 6)
+RangKeres(\includegraphics[height=0.4cm]{turtle.png}, 6)
+RangKeres(\includegraphics[height=0.4cm]{wolf.jpg}, 4)
+RangKeres(\includegraphics[height=0.4cm]{delphin.jpg}, 1)
 \end{alltt}
 
 \item 9 rangú elemet
 \begin{alltt}
-RangKeres(\aries, 9)
-RangKeres(\scorpio, 2)
+RangKeres(\includegraphics[height=0.4cm]{kenguru.png}, 9)
+RangKeres(\includegraphics[height=0.4cm]{horse.png}, 2)
 \end{alltt}
 \end{itemize}
 
-\noindent d) A kiegészítő információk alapján mi lesz $\cancer$ rangja?\\
-Megjegyzés: $r_{x}(\cancer)$ az $\cancer$ szimbólum rangjára vonatkozó aktuális ismereteinket jelöli abban a pillanatban, amikor az algoritmus az $x$ jelű csúcs feldolgozásánál tart. \\
-$r_{\cancer}(\cancer)=1+2$\\
-$r_{\taurus}(\cancer)=r_{\cancer}(\cancer)+1+1$\\
-$r_{\aries}(\cancer)=r_{\taurus}(\cancer)+0=5$\\
+\noindent d) A kiegészítő információk alapján mi lesz $\includegraphics[height=0.4cm]{wolf.jpg}$ rangja?\\
+Megjegyzés: $r_{x}(\includegraphics[height=0.4cm]{wolf.jpg})$ az $\includegraphics[height=0.4cm]{wolf.jpg}$ szimbólum rangjára vonatkozó aktuális ismereteinket jelöli abban a pillanatban, amikor az algoritmus az $x$ jelű csúcs feldolgozásánál tart. \\
+$r_{\includegraphics[height=0.4cm]{wolf.jpg}}(\includegraphics[height=0.4cm]{wolf.jpg})=1+2$\\
+$r_{\includegraphics[height=0.4cm]{turtle.png}}(\includegraphics[height=0.4cm]{wolf.jpg})=r_{\includegraphics[height=0.4cm]{turtle.png}}(\includegraphics[height=0.4cm]{turtle.png})+1+1$\\
+$r_{\includegraphics[height=0.4cm]{kenguru.png}}(\includegraphics[height=0.4cm]{wolf.jpg})=r_{\includegraphics[height=0.4cm]{turtle.png}}(\includegraphics[height=0.4cm]{wolf.jpg})+0=5$\\
 
-\noindent e) Hajstuk végre a {\scshape Beszúr(\pisces)}, illetve a {\scshape Töröl(\scorpio)} műveleteket, amennyiben tudjuk, hogy a $\pisces < \scorpio$, illetve a $\pisces > \sagittarius$ relációk teljesülnek!
+\noindent e) Hajstuk végre a {\scshape Beszúr(\includegraphics[height=0.4cm]{rhinoceros.png})}, illetve a {\scshape Töröl(\includegraphics[height=0.4cm]{horse.png})} műveleteket, amennyiben tudjuk, hogy a $\includegraphics[height=0.4cm]{rhinoceros.png} < \includegraphics[height=0.4cm]{horse.png}$, illetve a $\includegraphics[height=0.4cm]{rhinoceros.png} > \includegraphics[height=0.4cm]{lion.jpg}$ relációk teljesülnek!
+
+
 
 \begin{figure}[!h]
 \centering
   \begin{tikzpicture}[level/.style={sibling distance = 8cm/#1},level distance = .9cm]
-    \node[data]{\aries \nodepart{two}11}
-        child{ node[data]{\taurus \nodepart{two}6}
-    	    child{ node[data]{\gemini \nodepart{two}1}}
-            child{ node[data]{\cancer \nodepart{two}4}
-                child{ node[data]{\leo \nodepart{two}2}
-                       child{ node[data]{\virgo \nodepart{two}1}}
+    \node[data]{\includegraphics[height=1cm]{kenguru.png} \nodepart{two}11 }
+        child{ node[data]{\includegraphics[height=0.75cm]{turtle.png} \nodepart{two}6}
+    	    child{ node[data]{\includegraphics[height=0.75cm]{frog.png} \nodepart{two}1}}
+            child{ node[data]{\includegraphics[height=0.75cm]{wolf.jpg} \nodepart{two}4}
+                child{ node[data]{\includegraphics[height=0.75cm]{ozike.jpg} \nodepart{two}2}
+                       child{ node[data]{\includegraphics[height=0.75cm]{hare.jpg} \nodepart{two}1}}
                        child[missing]                    
                 }
-                child{ node[data]{\libra \nodepart{two}1}}
+                child{ node[data]{\includegraphics[height=0.75cm]{delphin.jpg} \nodepart{two}1}}
             }
         }
-        child{ node[data]{\pisces \nodepart{two}4}
-            child{ node[data]{\sagittarius \nodepart{two}1}}
-            child{ node[data]{\capricornus \nodepart{two}2}
-                child{ node[data]{\aquarius \nodepart{two}1}}
+        child{ node[data]{\includegraphics[height=0.4cm]{rhinoceros.png} \nodepart{two}4}
+            child{ node[data]{\includegraphics[height=0.75cm]{lion.jpg} \nodepart{two}1}}
+            child{ node[data]{\includegraphics[height=0.75cm]{giraffe.jpg} \nodepart{two}2}
+                child{ node[data]{\includegraphics[height=0.75cm]{bear.jpg} \nodepart{two}1}}
                 child[missing]
             }
         };
