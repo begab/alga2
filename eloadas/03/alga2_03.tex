@@ -15,7 +15,30 @@
 \usepackage{subfig}
 \usepackage{xcolor}
 \usepackage{listings}
+
+\usepackage{xcolor}
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
+\makeatletter
+\let\lstKV@SwitchCases\old@lstKV@SwitchCases
+
+\lst@Key{numbers}{none}{%
+	\def\lst@PlaceNumber{\lst@linebgrd}%
+	\lstKV@SwitchCases{#1}%
+	{none:\\%
+		left:\def\lst@PlaceNumber{\llap{\normalfont
+				\lst@numberstyle{\thelstnumber}\kern\lst@numbersep}\lst@linebgrd}\\%
+		right:\def\lst@PlaceNumber{\rlap{\normalfont
+				\kern\linewidth \kern\lst@numbersep
+				\lst@numberstyle{\thelstnumber}}\lst@linebgrd}%
+	}{\PackageError{Listings}{Numbers #1 unknown}\@ehc}}
+\makeatother
+
+
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -157,7 +180,7 @@ A továbbiakban szeretnénk, ha $h=\Theta(\log n)$ is teljesülne
     \end{columns}
 \end{frame}
 
-\begin{frame}{Véletlen építésű bináris keresőfák}
+\begin{frame}{Véletlen építésű bináris keresőfák (CLRS 12.4)}
 	\begin{itemize}
 		\item $n$ elemű bináris fa \textbf{legrosszabb esetben} $\Theta(n)$ magas is lehet
 		\item $n$ növekedésével a legrosszabb eset bekövetkezése azonban egyre valószínűtlenebb
@@ -199,7 +222,8 @@ class Node {
 }
 \end{lstlisting}
 			\begin{block}<2>{Megjegyzés}
-				Találkozni olyan implementációval is, ahol a magasság helyett az egyensúlyi faktort tárolják
+				Találkozni olyan implementációval is, ahol a magasság helyett 
+				az egyensúlyi faktort tárolják
 			\end{block}
 
 		\end{column}
@@ -209,10 +233,12 @@ class Node {
 		\centering
 \begin{tikzpicture}[node distance=0cm,outer sep = 0pt]
     \node (A) [box,minimum width=6em] {kulcs};
-    \node (H) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) {magassag};
+    \node (H) [box,anchor=north,minimum width=6em,fill=orange!30] at (A.south) 
+    {magassag};
     \node (D) [box,anchor=south,minimum width=6em] at (A.north) {apa};
     \node (B) [box,anchor=north west,minimum width=3em] at (H.south west) {bal};
-    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) {jobb};
+    \node (C) [box,anchor=north east,minimum width=3em] at (H.south east) 
+    {jobb};
     \coordinate (E) at (0,2);
     \coordinate (E) at (0,2);
     \node[below left = 1cm of B] (F) {};
@@ -570,6 +596,60 @@ class Node {
 		\end{enumerate}
 		\item A kölcsönvételt preferáljuk, hiszen az $O(1)$ időben elvégezhető
 	\end{itemize}
+\end{frame}
+
+\begin{frame}{B fa variánsok}
+	\begin{itemize}
+		\item Egyes implementációk/források (pl.~CLRS könyv is) $t$ értéket a 
+		csúcsok fokszámkorlátjára használja: ilyenkor a csúcsokban lévő kulcsok 
+		száma $\in [t-1, 2t-1]$
+		\item<2-> A telített csúcsok kaszkád vágását elkerülendő, bizonyos 
+		implementációk proaktívan viselkednek: már leszálló ágban (top-down) 
+		elvégzik a vágásokat (preemtive split)
+		\begin{itemize}
+			\item Így garantált, hogy amennyiben egy csúcsot szétvágunk, akkor 
+			az ő őse már nem szorul további szétvágásra (tail rekurzió)
+		\end{itemize}
+		\item<3-> B+ fa: kulcsok csak a levelekben legyenek $\rightarrow$ a 
+		belső pontokban elég csak a pointereket tárolni $\rightarrow$ nagyobb 
+		elágazási faktort tudunk alkalmazni $\rightarrow$ tovább csökkenthetjük 
+		a fa magasságát
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Tail rekurzió}
+	\begin{itemize}
+		\item Olyan rekurzív függvény, amely legutolsó műveleteként hajtja 
+		végre a rekurzív hívást
+		\item Hatékonyabb a nem tail rekurzív megoldásnál
+	\end{itemize}
+	\begin{columns}
+	\begin{column}{.5\textwidth}
+\begin{alltt}
+{\scshape{FiboT}}(n, a, b) \{
+  if (n==0) {return a}
+  if (n==1) {return b}
+  return Fibo(n-1, b, a+b)
+\}
+\end{alltt}
+	\end{column}
+	\begin{column}{.5\textwidth}
+\begin{alltt}
+{\scshape{Fibo}}(n) \{
+  if (n<2) {return n}
+  return Fibo(n-1) + Fibo(n-2)
+\}	
+\end{alltt}		
+	\end{column}
+\end{columns}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\linewidth]{screenshot001}
+	\label{fig:screenshot001}
+\end{figure}
+
+
 \end{frame}
 
 \begin{frame}{Összegzés}
