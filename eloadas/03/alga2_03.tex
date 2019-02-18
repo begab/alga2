@@ -610,10 +610,10 @@ class Node {
 			\item Így garantált, hogy amennyiben egy csúcsot szétvágunk, akkor 
 			az ő őse már nem szorul további szétvágásra (tail rekurzió)
 		\end{itemize}
-		\item<3-> B+ fa: kulcsok csak a levelekben legyenek $\rightarrow$ a 
-		belső pontokban elég csak a pointereket tárolni $\rightarrow$ nagyobb 
-		elágazási faktort tudunk alkalmazni $\rightarrow$ tovább csökkenthetjük 
-		a fa magasságát
+		\item<3-> B+ fa: a kulcsokat kísérő (esetleges) adattagok csak a 
+		levelekben legyenek tárolva $\rightarrow$ a belső pontokban csak 
+		pointerek és indexelt kulcsok $\rightarrow$ nagyobb elágazási faktort 
+		tudunk alkalmazni $\rightarrow$ tovább csökkenthető a fa magassága
 	\end{itemize}
 \end{frame}
 
