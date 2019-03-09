@@ -10,15 +10,19 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{beamerthemesplit}
-\usepackage{pgf,pgffor,pgfplots}
-\pgfplotsset{compat=1.15}
+
 \usepackage{subfig}
-\usepackage{xcolor}
+
 \usepackage{listings}
 \usepackage{nccfoots}
 \newcommand{\framenote}[1]{%
 	\Footnotetext{}{\emph{#1}}% Print footnote text
 }
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
@@ -88,18 +92,8 @@
 \tikzset{
   box/.style={draw, fill=pink!10, minimum width=5em, text centered, minimum 
   height=2.5em},
-treenode/.style = {circle, draw, align=center, inner sep=3pt, text centered, 
-font=\sffamily, text width=1em},
-int/.style = {rectangle split,rectangle split parts=2,draw,text centered, text 
-width = 1.6cm, text height = 0.3cm},
-subtree/.style={isosceles triangle, draw=black, align=center, minimum 
-height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north},
-data/.style={
-	minimum width=2em,
-	minimum height=2em,
-	draw, rectangle split,
-	rectangle split parts=2, text centered,
-}
+  subtree/.style={isosceles triangle, draw=black, align=center, minimum 
+height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north}
 }
 \usetheme{Warsaw}
 \institute{Szegedi Tudományegyetem}
@@ -140,7 +134,7 @@ data/.style={
 \begin{columns}
 	\begin{column}{.6\linewidth}
 		\begin{alltt}
-{\scshape Növel}(A) \{
+{\rmfamily\scshape{Növel}}(A) \{
    i=0
    while i < A.hossz és A[i] = 1 \{
       A[i] = 0
@@ -186,7 +180,8 @@ data/.style={
 \end{block}
 
 \begin{example}
-	$k$ bites számlálón {\scshape Növel} művelet $n$-szeri végrehajtása: 
+	$k$ bites számlálón {\rmfamily\scshape{Növel}} művelet $n$-szeri 
+	végrehajtása: 
 	$O(nk)$ \\
 	Helyes, de nem éles korlát, mivel az $i$ pozíciójú bit csak minden $2^i$ 
 	számú végrehajtás után változik. \\	
@@ -195,7 +190,8 @@ data/.style={
 \begin{block}<3>{Élesebb korlát}
 	$$\sum_{i=0}^{k-1} \Big\lfloor \frac{n}{2^i} \Big\rfloor < n 
 	\sum_{i=0}^{\infty} \frac{1}{2^i} = 2n = O(n) $$ \\ \pause
-	Vagyis a {\scshape Növel} művelet amortizált költsége $O(n)/n=O(1)$
+	Vagyis a {\rmfamily\scshape{Növel}} művelet amortizált költsége 
+	$O(n)/n=O(1)$
 \end{block}
 \end{frame}
 
@@ -218,10 +214,10 @@ data/.style={
 
 \begin{frame}{Könyvelési módszer használata -- példa}
 \begin{itemize}
-	\item A {\rmfamily\scshape Növel} művelet működése során könyveljünk el 2 
+	\item A {\rmfamily\scshape{Növel}} művelet működése során könyveljünk el 2 
 	egységnyi költséget egy bit 1-re állításához
 	\item A költség fele a majdani visszaállításra félretett ``hitel''
-	\item<2-> A {\rmfamily\scshape Növel} minden hívása során 1 bitet állítunk 
+	\item<2-> A {\rmfamily\scshape{Növel}} minden hívása során 1 bitet állítunk 
 	1-re
 	\begin{itemize}
 		\item $n$ végrehajtás $\Rightarrow 2n$ összköltség $\Rightarrow O(1)$ 
@@ -229,8 +225,27 @@ data/.style={
 	\end{itemize}
 \end{itemize}
 \begin{alertblock}{Kérdés}
-	A {\rmfamily\scshape Csökkent} műveletet bevezetését követően is maradna az
+	A {\rmfamily\scshape{Csökkent}} műveletet bevezetését követően is maradna az
 	$O(1)$ amortizált költség? \hfill \pause Nem, $O(k)$ lenne.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Könyvelési módszer használata -- dinamikusan bővülő tömb}
+\begin{itemize}
+	\item Dinamikusan bővülő tömb betelésekor megduplázza méretét, és a benne 
+	aktuálisan szereplő értékeket a megnövelt méretű tömbbe másolja
+	\item Egy elem beszúrásához rendeljünk 3 \textit{kreditet}
+	\begin{itemize}
+		\item Az első egység elhasználódik a kulcs beszúrása kapcsán
+		\item A második egységet saját maga majdani (első alkalommal történő) 
+		átmásolására tartsa fenn
+		\item A harmadik egységből minden csúcs adományoz egy már 0 
+		egyenlegű kulcsnak a másolására (tudja, hogy vissza fogja kapni)
+	\end{itemize}
+\end{itemize}
+\begin{alertblock}<2>{Észrevétel}
+	Amikor bővítünk, ugyanannyi kulcsnak lesz 0 az egyenlege, 
+	mint ahánynak 2.
 \end{alertblock}
 \end{frame}
 
@@ -252,16 +267,16 @@ data/.style={
 	mivel ekkor nyilvánvalóan $\sum\limits_{i=1}^n \hat{c}_i \geq 
 	\sum\limits_{i=1}^n c_i$ is teljesül
 	\begin{block}<4>{Kényelmes megoldás}
-		$\Phi(D_0)=0$, és lássuk be, hogy $\Phi(D_i)\geq 0$
+		$\Phi(D_0)=0$, és lássuk be, hogy $\Phi(D_i)\geq 0$ minden $i$-re
 	\end{block}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Amortizált költségelemzés -- Példa}
 \begin{itemize}
-	\item Legyen $\Phi(D_i) = b_i$ a {\rmfamily\scshape Növel} művelet 
+	\item Legyen $\Phi(D_i) = b_i$ a {\rmfamily\scshape{Növel}} művelet 
 	$i$-szeri alkalmazására a számlálóban szereplő 1 értékű bitek száma
-	\item Jelölje $t_i$ a {\rmfamily\scshape Növel} művelet $i$-edik 
+	\item Jelölje $t_i$ a {\rmfamily\scshape{Növel}} művelet $i$-edik 
 	végrehajtásakor $1$-ről $0$-ra változó bitek számát (vagyis $c_i\leq t_i+1$)
 	\begin{itemize}
 		\item $b_i \leq b_{i-1}-t_i+1 \Rightarrow \Phi(D_i) - \Phi(D_{i-1}) 
@@ -424,11 +439,11 @@ Töröl} műveletek végrehajtása esetén}
 \end{frame}
 
 \begin{frame}{$O(1)$ idejű műveletek}
-\begin{block}{{\rmfamily\scshape Egyesít} és {\rmfamily\scshape Beszúr}}
+\begin{block}{{\rmfamily\scshape{Egyesít}} és {\rmfamily\scshape{Beszúr}}}
 	$H_1$ és $H_2$ Fibonacci kupacok egyesítésekor a kupacok gyökérlistáit 
 	összefűzzük, (min[H] aktualizálásán túl) \textbf{más teendőnk nincs}
 \end{block}
-\begin{block}{{\rmfamily\scshape Min-keres}}
+\begin{block}{{\rmfamily\scshape{Min-keres}}}
 	min[H] explicit tárolásából adódóan $O(1)$
 \end{block}
 \end{frame}
@@ -440,7 +455,8 @@ Töröl} műveletek végrehajtása esetén}
   	\begin{enumerate}
   		\item min[H] által meghatározott csúcsot eltávolítjuk a gyökérlistából
   		\item min[H] gyerekeit a gyökérlistába delegáljuk
-  		\item Összevonjuk a gyökérlistában szereplő azonos fokszámú fákat
+  		\item Összevonjuk a gyökérlistában szereplő azonos fokszámú fákat 
+  		(segédtömb használatával)
   	\end{enumerate}
   \end{itemize}
 \end{frame}
@@ -455,6 +471,121 @@ Töröl} műveletek végrehajtása esetén}
 		gyerekét, úgy azt is rekurzívan a gyökérlistába visszük (megjelöltségét 
 		eltávolítjuk)
 	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Ferde fák (Splay tree)}
+\begin{itemize}
+	\item Olyan keresőfa, ami bármely művelet végrehajtása után (még egy 
+	sikertelen keresés után is), az utoljára érintett csúcsot forgatások 
+	segítségével a gyökérbe viszi
+	\item Legrosszabb esetben $O({n})$ magasságú, de amortizált tekintetben a 
+	műveletei $O({\log{n}})$-beliek
+	\item Működése mögötti intuíció: lehetnek sűrűbben érintett elemei a fának 
+	$\Rightarrow$ ne hagyjuk őket ``lesüllyedni''
+\end{itemize}
+\begin{alertblock}<2>{Lehetséges hátránya}
+	Mivel még egy (sikertelen) {\rmfamily\scshape{Keres}} művelet is változtat 
+	a fa struktúráján, így többszálú használata problémás.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Splay tree -- gyökérig való forgatások}
+\begin{itemize}
+	\item Ha a gyökérbe juttatni kívánt $\mathbf{x}$ csúcs már a jelenlegi $y$ 
+	gyökérelem bal (jobb) fia, akkor egyszerűen forgassunk $y$ körül jobbra 
+	(balra)
+	\item Egyébként 2 lehetőség van (és ezek szimmetrikusai) $\mathbf{x}$ 
+	gyökérbe 
+	juttatására
+\end{itemize}
+\begin{columns}
+\begin{column}{0.55\linewidth}
+	\begin{tikzpicture}
+	\node {z}
+	child[level distance=5mm]{ node{y}
+		child[level distance=5mm]{ node{\textbf{x}}
+			child[sibling distance=12mm]{node[subtree]{$\alpha$}}
+			child[sibling distance=12mm]{node[subtree]{$\beta$}}
+		}
+		child[level distance=5mm]{ node[subtree]{$\gamma$}}
+	}
+	child[level distance=2mm]{node[subtree]{$\delta$}};
+	\end{tikzpicture}
+	\begin{enumerate}
+		\item z csúcs körül jobbra majd
+		\item y csúcs körül jobbra forgatunk
+	\end{enumerate}
+\end{column}
+\begin{column}{0.55\linewidth}
+\begin{tikzpicture}
+\node {z}
+child[level distance=5mm]{ node{y}
+	child[level distance=5mm]{ node[subtree]{$\alpha$}}
+	child[level distance=5mm]{ node{\textbf{x}}
+		child[sibling distance=12mm]{node[subtree]{$\beta$}}
+		child[sibling distance=12mm]{node[subtree]{$\gamma$}}
+	}
+}
+child[level distance=2mm]{node[subtree]{$\delta$}};
+\end{tikzpicture}
+	\begin{enumerate}
+	\item y csúcs körül balra majd
+	\item z csúcs körül jobbra forgatunk
+\end{enumerate}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Splay tree -- példák}
+
+\begin{columns}
+	\begin{column}{0.2\linewidth}
+		\begin{block}{Eredeti fa}
+			\begin{tikzpicture}
+			\node {49}
+			child{ node{7}
+				child[missing]
+				child{ node{13}
+					child{node{8}}
+					child[missing]
+				}
+			}
+			child[missing];
+			\end{tikzpicture}
+		\end{block}
+	\end{column}
+
+	\begin{column}{0.3\linewidth}
+		\begin{block}{{\rmfamily\scshape{Keres}}(21) után}
+		\begin{tikzpicture}
+		\node{\color{red}{\textbf{13}}}
+		child{ node{7}
+				child[missing]				
+				child{node{8}}
+		}
+		child{node{49}};
+		\end{tikzpicture}
+	\end{block}
+	\end{column}
+
+	\begin{column}{0.3\linewidth}
+	\begin{block}{{\rmfamily\scshape{Beszúr}}(10) után}
+		\begin{tikzpicture}
+		\node{\color{red}{\textbf{10}}}
+		child{ node{8}
+			child{node{7}}
+			child[missing]
+		}
+		child{node{13}
+			child[missing]
+			child{node{49}}			
+		};
+		\end{tikzpicture}
+	\end{block}
+	\end{column}
+\end{columns}
+
+
 \end{frame}
 
 \begin{frame}{Összegzés}

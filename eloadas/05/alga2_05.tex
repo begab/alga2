@@ -19,6 +19,11 @@
 \newcommand{\framenote}[1]{%
   \Footnotetext{}{\emph{#1}}% Print footnote text
 }
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
