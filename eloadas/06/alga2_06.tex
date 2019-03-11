@@ -187,7 +187,7 @@ height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north}
 	számú végrehajtás után változik. \\	
 \end{example}
 
-\begin{block}<3>{Élesebb korlát}
+\begin{block}<2>{Élesebb korlát}
 	$$\sum_{i=0}^{k-1} \Big\lfloor \frac{n}{2^i} \Big\rfloor < n 
 	\sum_{i=0}^{\infty} \frac{1}{2^i} = 2n = O(n) $$ \\ \pause
 	Vagyis a {\rmfamily\scshape{Növel}} művelet amortizált költsége 
@@ -279,8 +279,9 @@ height=0.5cm, minimum width=1cm, shape border rotate=90, anchor=north}
 	\item Jelölje $t_i$ a {\rmfamily\scshape{Növel}} művelet $i$-edik 
 	végrehajtásakor $1$-ről $0$-ra változó bitek számát (vagyis $c_i\leq t_i+1$)
 	\begin{itemize}
-		\item $b_i \leq b_{i-1}-t_i+1 \Rightarrow \Phi(D_i) - \Phi(D_{i-1}) 
-		\leq 1-t_i$
+		\item Vegyük észre\footnote{$b_i=0$ eset miatt egyenlőtlenség}, hogy 
+		$\Phi(D_i) = b_i \leq b_{i-1} - t_i + 1$
+		\item Vagyis a potenciálváltozás $\Phi(D_i) -\Phi(D_{i-1})\leq 1-t_i$
 		\item Így az amortizációs költség $\hat{c_i}\leq 
 		c_i+1-t_i=t_i+1+1-t_i=2$
 	\end{itemize}
