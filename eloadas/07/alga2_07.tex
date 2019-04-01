@@ -11,13 +11,20 @@
 \usepackage[T1]{fontenc}
 \usepackage{beamerthemesplit}
 \usepackage{pgf,pgffor,pgfplots}
-\pgfplotsset{compat=1.15}
+%\pgfplotsset{compat=1.15}
 \usepackage{subfig}
 \usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{listings}
 \usepackage{nccfoots}
 \newcommand{\framenote}[1]{%
 	\Footnotetext{}{\emph{#1}}% Print footnote text
 }
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
@@ -32,31 +39,31 @@
 \newcount\bt@rangeb
 
 \newcommand\btIfInRange[2]{%
-    \global\let\bt@inrange\@secondoftwo%
-    \edef\bt@rangelist{#2}%
-    \foreach \range in \bt@rangelist {%
-        \afterassignment\bt@getrangeb%
-        \bt@rangea=0\range\relax%
-        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
-        }%
-        \ifnum\result=1\relax%
-            \breakforeach%
-            \global\let\bt@inrange\@firstoftwo%
-        \fi%
-    }%
-    \bt@inrange%
+	\global\let\bt@inrange\@secondoftwo%
+	\edef\bt@rangelist{#2}%
+	\foreach \range in \bt@rangelist {%
+		\afterassignment\bt@getrangeb%
+		\bt@rangea=0\range\relax%
+		\pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
+		}%
+		\ifnum\result=1\relax%
+		\breakforeach%
+		\global\let\bt@inrange\@firstoftwo%
+		\fi%
+	}%
+	\bt@inrange%
 }
 \newcommand\bt@getrangeb{%
-    \@ifnextchar\relax%
-        {\bt@rangeb=\bt@rangea}%
-        {\@getrangeb}%
+	\@ifnextchar\relax%
+	{\bt@rangeb=\bt@rangea}%
+	{\@getrangeb}%
 }
 \def\@getrangeb-#1\relax{%
-    \ifx\relax#1\relax%
-        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
-    \else%
-        \bt@rangeb=#1\relax%
-    \fi%
+	\ifx\relax#1\relax%
+	\bt@rangeb=100000%   \maxdimen is too large for pgfmath
+	\else%
+	\bt@rangeb=#1\relax%
+	\fi%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,17 +74,17 @@
 %overlay spec match.
 % 
 \newcommand<>{\btLstHL}[1]{%
-  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+	\only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
 }%
 \makeatother
 
 \usepackage{hyperref}
 \hypersetup{
-    colorlinks = true,
-    linkcolor = blue,
-    urlcolor  = blue,
-    citecolor = blue,
-    linkbordercolor = {white},
+	colorlinks = true,
+	linkcolor = blue,
+	urlcolor  = blue,
+	citecolor = blue,
+	linkbordercolor = {white},
 }
 \usepackage{alltt}
 \usepackage{tikz,tkz-euclide}
@@ -128,8 +135,9 @@
 \begin{block}{Megjegyzés}
 	A keresztszorzat valójában háromdimenziós fogalom: egy 
 	$\overrightarrow{p_1}$-re és $\overrightarrow{p_2}$-re 
-	merőleges, velük jobbsodrású rendszert alkotó vektor, melynek hossza
-	$\lvert x_1 y_2 - x_2 y_1 \rvert$.
+	merőleges, velük 
+	\href{http://nagysandor.eu/harrisonia/CrossProduct_HU.html}{jobbsodrású 
+	rendszert alkotó vektor}, melynek hossza $\lvert x_1 y_2 - x_2 y_1 \rvert$.
 \end{block}
 \end{frame}
 
@@ -452,25 +460,41 @@ $y$-koordinátája nagyobb $s_2$ $y$-koordinátájánál adott $x$-koordináta m
 \begin{frame}{Konvex burok definíciója}
 \begin{block}{Konvex burok}
 	Q ponthalmaz konvex burka az a legkisebb P konvex poligon, 
-	amelyre Q minden pontja	vagy P határán van, vagy a belsejében.\\
+	amelyre Q minden pontja	vagy P határán van, vagy a 
+	belsejében.\\
 \end{block}
 \begin{columns}
-	\begin{column}{.6\linewidth}
+	\begin{column}{.5\linewidth}
 \includegraphics[width=\linewidth]{2D_ConvexHull}
 	\end{column}
-	\begin{column}{.6\linewidth}
+	\begin{column}{.7\linewidth}
 	Q konvex burkát CH(Q)-val jelöljük.\\
-$CH(Q)$-ra természetesen igaz, hogy $CH(Q) \subseteq Q$.
+    $CH(Q) \subseteq Q$ pontjait $Q$ \textbf{extrém pont}jainak. \\
+    Jelöljük a továbbiakban $\lvert Q \rvert$-t $n$-nel.
+    
 	\end{column}
 \end{columns}
+\begin{block}{CH gyakorlati felhasználása}
+Objektumok ütközésének elkerülése, gépi tanulás (klaszterezés), \ldots
+\end{block}
 \end{frame}
 
-\begin{frame}{Konvex burok meghatározására szolgáló algoritmusok}
+\begin{frame}{Konvex burok meghatározásának elvi algoritmusa}
+\begin{theorem}
+$P$ pont csak abban az esetben extrém pontja $Q$-nak, ha
+az a $Q$-ból kialakítható háromszögek mindegyikén kívül esik, vagy annak egy 
+csúcsa.
+\end{theorem}
+\begin{itemize}
+	\item Egy csúcs extrém voltának eldöntése $\binom{n-1}{3}=O(n^3)$
+	\item Mivel $n$ csúcs van, így az elvi algoritmus $O(n^4)$ futási idejű
+\end{itemize}
+\end{frame}
 
+\begin{frame}{Konvex burok meghatározása hatékonyan}
 \begin{itemize}
 	\item Különféle megközelítések léteznek
 	\begin{enumerate}
-		\item \textbf{Forgatásos söprés} (Graham-féle pásztázás is ilyen)
 		\item Növekményes módszer: ''balról jobbra'' számítjuk ki a CH-t
 		\item Oszd-meg-és-uralkodj: CH számítása a pontok részhalmazára, majd 
 		ezek egyesítése
@@ -490,15 +514,15 @@ $CH(Q)$-ra természetesen igaz, hogy $CH(Q) \subseteq Q$.
 \begin{alltt}
 {\scshape{Graham-pásztázás}}(S) \{
   P0 = minimális x-koordinátájú Q-beli pont (több ilyen
-  esetén válasszuk az x-koordináta szerint is minimálisat)
+  esetén válasszuk az y-koordináta szerint is minimálisat)
   P = {\scshape{PolárszögSzerintRendez}}(Q)
   S = {\scshape{VermetLétesít}}()
   {\scshape{Verembe}}(P0, S)
   {\scshape{Verembe}}(P1, S)
   {\scshape{Verembe}}(P2, S)
   for i=3 to m \{
-    while {\scshape{Legfelső-alatti(S)}}, {\scshape{Legfelső(S)}} és Pi
-          pontok szöge nem fordul balra \{
+    while {\scshape{Legfelső-alatti(S)}}, {\scshape{Legfelső(S)}} és Pi nem 
+           fordul balra \{
       {\scshape{Veremből(S)}}
     \}
     {\scshape{Verembe}}(Pi, S)
@@ -524,23 +548,34 @@ $P$ pontot $(x,y)$ koordinátapár helyett egy referenciaponttól vett távolsá
 	\end{itemize}
 \end{itemize}
 
-  \begin{tikzpicture}
-\coordinate (origo) at (0,0);
-
-\fill[black] (origo) circle (0.1);
-\draw[thick,gray,dashed] (0,1) -- ++(0,-3) node (Y) [black,below] {};
-
-\draw[thick] (origo) -- ++(3,-1) coordinate (P);
-\fill (P) circle (0.1);
-
-\pic [draw, ->, "$\theta$"] {angle = Y--origo--P};
-
-\draw[thick] (origo) -- ++(2,0) coordinate (Q);
-\fill (Q) circle (0.1);
-
-\draw[thick] (origo) -- ++(1,1) coordinate (R);
-\fill (R) circle (0.1);
-\end{tikzpicture}
+\begin{columns}
+	\begin{column}{.3\linewidth}
+		  \begin{tikzpicture}
+		\coordinate (origo) at (0,0);
+		
+		\fill[black] (origo) circle (0.1);
+		\draw[thick,gray,dashed] (0,1) -- ++(0,-3) node (Y) [black,below] {};
+		
+		\draw[thick] (origo) -- ++(3,-1) coordinate (P);
+		\fill (P) circle (0.1);
+		
+		\pic [draw, ->, "$\theta$"] {angle = Y--origo--P};
+		
+		\draw[thick] (origo) -- ++(2,0) coordinate (Q);
+		\fill (Q) circle (0.1);
+		
+		\draw[thick] (origo) -- ++(1,1) coordinate (R);
+		\fill (R) circle (0.1);
+		\end{tikzpicture}
+	\end{column} ~
+    \begin{column}{0.8\linewidth}
+    	\begin{block}{Megjegyzés}
+    		A valóságban a vektor hosszának és forgásszögének kiszámítása 
+    		költséges és numerikusan sem jó ötlet (\texttt{sqrt} és 
+    		szögfüggvény miatt)
+    	\end{block}
+    \end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Zárt nem metsző poligon}
@@ -615,6 +650,17 @@ kell legyen
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{Legtávolabbi pontpár megtalálása -- forgatásos söprés}
+\begin{columns}
+	\begin{column}{.5\linewidth}
+	\includegraphics[width=\linewidth]{forgatasos_sopres}
+	\end{column} 
+	\begin{column}{.5\linewidth}
+	\includegraphics[width=\linewidth]{forgatasos_sopres2}
+\end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}{Legközelebbi pontpár megtalálása}
 \begin{itemize}
 	\item Adott $n$ elemű $P$ ponthalmazra mi az a $(P_i, P_j) \in P \times P$ 
@@ -655,6 +701,30 @@ kell legyen
 		\end{block}
 	\end{column}
 \end{columns}
+\end{frame}
+
+\begin{comment}
+\begin{frame}{Legközelebbi szomszéd meghatározása}
+\begin{block}{Probléma}
+	Adott ponthoz találjuk meg a hozzá legközelebb eső pontot
+\end{block}
+\begin{block}{Felhasználása}
+	k-legközelebbi osztályozó, klaszterező eljárások
+\end{block}
+\begin{block}{k-d fák}
+	$n$ pont esetén a k-d fák fő műveletei átlagos esetben $O(n \log n)$ 
+	műveletigényűek
+\end{block}
+\end{frame}
+\end{comment}
+
+\begin{frame}{Összefoglalás}
+\begin{itemize}
+	\item A geometriai algoritmusok számos gyakorlati probléma megoldása során 
+	felmerülnek
+	\item Nagy méretű inputok esetén fontos, hogy a négyzetes (vagy annál is 
+	rosszabb) futási idejű algoritmusoknál hatékonyabbakat használjunk
+\end{itemize}
 \end{frame}
 
 \end{document}
