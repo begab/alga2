@@ -285,19 +285,20 @@ egyik oldalára, $P_2$ pont pedig a másik oldalára esik
 \begin{columns}
 	\begin{column}{.6\linewidth}
 		\begin{alltt}
-			{\scshape Forgásirány}(X, Y, Z) \{
-			   return (Y-X)\(\times\)(Z-X)
+			{\scshape{Forgásirány}}(P1, P2, P3) \{
+			   return (P2.x-P1.x)*(P3.y-P1.y) - (P3.x-P1.x)*(P2.y-P1.y)
 			\} \vfill
-			{\scshape MetszőSzakaszok}(A, B, C, D) \{
-			   d1 = {\scshape Forgásirány}(A, B, C)
-			   d2 = {\scshape Forgásirány}(A, B, D)
-			   d3 = {\scshape Forgásirány}(C, D, A)
-			   d4 = {\scshape Forgásirány}(C, D, B)
+			{\scshape{MetszőSzakaszok}}(A, B, C, D) \{
+			   d1 = {\scshape{Forgásirány}}(A, B, C)
+			   d2 = {\scshape{Forgásirány}}(A, B, D)
+			   d3 = {\scshape{Forgásirány}}(C, D, A)
+			   d4 = {\scshape{Forgásirány}}(C, D, B)
 			   return d1 * d2 < 0 és d3*d4 < 0
 			\}
 		\end{alltt}
 	\end{column}
-	\begin{column}<2>{.4\linewidth}
+	\begin{column}<2>{.55\linewidth}
+		\vskip 1cm
 		Ezzel csak ``valódi'' metszéseket találunk meg, a szakaszra 
 		illeszkedő végpontú szakaszt nem kezeltük így
 	\end{column}
@@ -474,10 +475,20 @@ $y$-koordinátája nagyobb $s_2$ $y$-koordinátájánál adott $x$-koordináta m
     
 	\end{column}
 \end{columns}
-\begin{block}{CH gyakorlati felhasználása}
-Objektumok ütközésének elkerülése, gépi tanulás (klaszterezés), \ldots
-\end{block}
 \end{frame}
+
+\begin{frame}{CH gyakorlati felhasználása}
+\begin{itemize}
+	\item Objektumok ütközésének elkerülése: vegyük akadályok 
+	koordinátáit, ezek CH-a képezze az elkerülendő régiót
+	\item Agglomeratív klaszterezés: gépi tanuló eljárás, melynek célja 
+	vektorokkal leírt megfigyelések homogén részsokaságainak kialakítása
+\end{itemize}
+\includegraphics[width=\linewidth]{clustergram}
+\end{frame}
+
+
+
 
 \begin{frame}{Konvex burok meghatározásának elvi algoritmusa}
 \begin{theorem}
@@ -578,6 +589,30 @@ $P$ pontot $(x,y)$ koordinátapár helyett egy referenciaponttól vett távolsá
 \end{columns}
 \end{frame}
 
+\begin{frame}[fragile]{Polárszög szerinti rendezés a gyakorlatban}
+\begin{itemize}
+	\item Numerikus hibák mérséklése és a 0-val való osztás elkerülésére
+	\begin{itemize}
+		 \item a forgásszöget a pontszorzattal számoljuk
+		 \item a vektor hossza helyett a négyzetét számoljuk
+		\begin{itemize}
+			\item Emlékeztetőül: $\lVert \vec{p} \rVert_2 = \lVert 
+			\overrightarrow{OP} \rVert_2 = \sqrt{\sum_{i=1}^{d} P[i]^2}$
+		\end{itemize}
+	\item Bármilyen összehasonlító rendezést (pl.~gyorsrendezés) tudunk 
+használni a forgásirányokra támaszkodva
+	\end{itemize}
+\end{itemize}
+
+\begin{block}{\texttt{pontok} lista rendezése \texttt{R} referenciapont mentén}
+	\begin{alltt}
+Collections.sort(pontok, (A, B) -> {
+  return (int) Math.signum({\scshape{Forgásirány}}(R, A, B));
+});
+\end{alltt}
+\end{block}
+\end{frame}
+
 \begin{frame}{Zárt nem metsző poligon}
 \begin{itemize}
 	\item A pontokat a polárszöges rendezés sorrendjében 
@@ -586,52 +621,114 @@ $P$ pontot $(x,y)$ koordinátapár helyett egy referenciaponttól vett távolsá
 
 \begin{columns}
 	\begin{column}{.8\linewidth}
-\begin{tikzpicture}
-\tkzInit[xmax=7,ymin=0,ymax=4,xmin=0,ymin=0]
-\tkzAxeXY
-\node[outer sep=0pt,circle, fill,inner 
-sep=1.5pt,label={[fill=white]left:$A$}] (A) at (1,1) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
-label={[fill=white]right:$B$}] (B) at (1,3) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]left:$C$}] 
-(C) at (3,2) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]north 
-	east:$E$}] 
-(E) at (5,0) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
-label={[fill=white]right:$F$}] (F) at (5,2) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt,label={[fill=white]north:$G$}] 
-(G) at (4,4) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
-label={[fill=white]north:$H$}] (H) at (7,3) {};
-\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
-label={[fill=white]north:$D$}] (D) at (1,4) {};
-
-\draw (A)--(E);
-\draw (E)--(F);
-\draw (F)--(H);
-\draw (H)--(C);
-\draw (C)--(G);
-\draw (G)--(D);
-\draw (D)--(B);
-\draw (B)--(A);
-\end{tikzpicture}
+		\begin{tikzpicture}
+		\tkzInit[xmax=7,ymin=0,ymax=4,xmin=0,ymin=0]
+		\tkzAxeXY
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=1.5pt,label={[fill=white]left:$A$}] (A) at (1,1) {};
+		\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+		label={[fill=white]right:$B$}] (B) at (1,3) {};
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=1.5pt,label={[fill=white]left:$C$}] 
+		(C) at (3,2) {};
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=1.5pt,label={[fill=white]north 
+			east:$E$}] 
+		(E) at (5,0) {};
+		\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+		label={[fill=white]right:$F$}] (F) at (5,2) {};
+		\node[outer sep=0pt,circle, fill,inner 
+		sep=1.5pt,label={[fill=white]north:$G$}] 
+		(G) at (4,4) {};
+		\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+		label={[fill=white]north:$H$}] (H) at (7,3) {};
+		\node[outer sep=0pt,circle, fill,inner sep=1.5pt, 
+		label={[fill=white]north:$D$}] (D) at (1,4) {};
+		
+		\draw (A)--(E);
+		\draw (E)--(F);
+		\draw (F)--(H);
+		\draw (H)--(C);
+		\draw (C)--(G);
+		\draw (G)--(D);
+		\draw (D)--(B);
+		\draw (B)--(A);
+		\end{tikzpicture}
 	\end{column}
-\begin{column}{.2\linewidth}
-	\begin{block}{A rendezés}
-		\begin{enumerate}
-			\item A
-			\item E
-			\item F
-			\item H
-			\item C
-			\item G
-			\item D
-			\item B
-		\end{enumerate}
-	\end{block}
+	\begin{column}{.2\linewidth}
+		\begin{block}{A rendezés}
+			\begin{enumerate}
+				\item A
+				\item E
+				\item F
+				\item H
+				\item C
+				\item G
+				\item D
+				\item B
+			\end{enumerate}
+		\end{block}
+	\end{column}
+\end{columns}
+\begin{alertblock}<2>{}
+	A pontok polárszög szerinti rendezésével nyert sorrendben történő 
+összekötése nem feltétlen eredményez konvex poligont
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Graham-féle pásztázás példa}
+\begin{itemize}
+	\item Kezdetben: $S=[A,E,F]$
+	\begin{enumerate}
+		\item {\scshape{Forgásirány}}(E,F,H), {\scshape{Veremből}}(S), 
+		{\scshape{Forgásirány}}(A,E,H), {\scshape{Verembe}}(S, H)
+		\item {\scshape{Forgásirány}}(E,H,C), {\scshape{Verembe}}(S, C)
+		\item {\scshape{Forgásirány}}(H,C,G), {\scshape{Veremből}}(S), 
+		{\scshape{Forgásirány}}(E,H,G), {\scshape{Verembe}}(S, G)
+		\item {\scshape{Forgásirány}}(H,G,D), {\scshape{Verembe}}(S,D)
+		\item {\scshape{Forgásirány}}(G,D,B), {\scshape{Verembe}}(S,B)
+	\end{enumerate}
+	\item Végezetül: $S=[A,E,H,G,D,B]$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{CH meghatározása Jarvis meneteléssel}
+\begin{itemize}
+	\item Ajándékcsomagolás elvén működik $O(nh)$ időben
+	\item Kezdésnek válasszuk ki a legbaloldalibb pontot
+	\item Amíg vissza nem érünk a kezdőpontba, válasszuk ki a legutolsónak 
+	választott ponttól leginkább balra eső pontot (vagyis azt a pontot, 
+	amelytől minden további ponthoz jobbra fordulásra van szükség)
+	\item A Jarvis-féle menetelés folyamatosan bővíti CH(Q)-t (egy iterációban 
+	$O(n)$ próbát tesz), "vakvágányoktól mentes"
+	\begin{itemize}
+	\item A Graham-féle pásztázás minden csúcsot potenciálisan CH(Q)-beliként 
+	kezel
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jarvis menetelése illusztrálva}
+\includegraphics[width=1.1\linewidth]{JarvisAlgorithm}
+\end{frame}
+
+\begin{frame}{CH(Q) várható mérete}
+\begin{itemize}
+	\item Négyzeten/körlapon 2d-ben \textbf{véletlenszerűen} elhelyezkedő 
+	ponthalmaznak 
+	átlagosan $O(\log{n})$/$O(n^{1/3})$ elemű a CH-ja
+\end{itemize}
+\begin{columns}
+	\begin{column}{0.5\linewidth}
+		\includegraphics[width=\linewidth]{random_data_ch}
+	\end{column}
+	\begin{column}{0.5\linewidth}
+	\includegraphics[width=\linewidth]{ch_size_simulation}
 \end{column}
 \end{columns}
+\begin{alertblock}{Ne feledjük!}
+	Legrosszabb esetben $CH(Q)=n$ is teljesülhet
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{Legtávolabbi pontpár megtalálása}
@@ -650,7 +747,28 @@ kell legyen
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{A legtávolabbi pontpár a CH-on lesz}
+\begin{itemize}
+	\item Az észrevétel indirekt módon bizonyítható
+	\begin{itemize}
+		\item Tegyük föl, hogy $P_i$ és $P_j$ pontok közötti távolság 
+		maximális, és $P_i \in CH(Q), P_j \notin CH(Q)$
+		\item Vegyünk egy $P_i$ középpontú $\lVert \overline{P_iP_j} \rVert$ 
+		sugarú gömböt \\
+		$\Rightarrow$ egyetlen $P_k \in Q$ pont sem eshet a 
+		gömbön kívül\pause, máskülönben nem $(P_i, P_j)$ alkotná a legtávolabbi 
+		pontpárt
+		$\Rightarrow P_j \in CH(Q)$, ami viszont ellentmondás
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Legtávolabbi pontpár megtalálása -- forgatásos söprés}
+\begin{itemize}
+	\item Átellenes (párhuzamos egyenesekre illeszkedő) csúcsokat keresünk, és 
+	ezeket görgetjük végig: $O(h)$
+\end{itemize}
+
 \begin{columns}
 	\begin{column}{.5\linewidth}
 	\includegraphics[width=\linewidth]{forgatasos_sopres}
@@ -677,8 +795,8 @@ kell legyen
 	\begin{itemize}
 		\item Vegyük azt az $l$ egyenest, ami két egyenlő részre vágja a 
 		pontokat ($P_L$ és $P_R$)
-		\item A $P_L$ és $P_R$-beli pontok közül rekurzívan keressük meg a 
-		legközelebbi pontpárt $d=\min(d_L, d_R)$
+		\item A $P_L$ és $P_R$-beli pontok közül rekurzívan határozzuk meg a
+		legközelebbi pontpár közötti távolságot $d=\min(d_L, d_R)$
 		\item Döntsük el, hogy találni-e olyan $(P_i, P_j)$ pontpárt, melyre 
 		$P_i \in P_L$ és $P_j \in P_R$, továbbá távolságuk $d' < d$
 	\end{itemize}
@@ -693,8 +811,10 @@ kell legyen
 	\includegraphics[width=\linewidth]{closepair}
 \end{figure}
 	\end{column}
-	\begin{column}{.6\linewidth}
-		\begin{block}<2>{Jó hír}
+
+	\begin{column}<2>{.6\linewidth}
+		\includegraphics[width=\linewidth]{furthest_points8}
+		\begin{block}{Jó hír}
 			%$S$ sávon belül sem kell minden pontpárt összehasonlítanunk \\
 			Elegendő az $y$ koordináta alapján vett rendezés szerinti 7 
 			rákövetkező ponttal összevetni az $S$-beli pontokat
@@ -703,20 +823,82 @@ kell legyen
 \end{columns}
 \end{frame}
 
-\begin{comment}
-\begin{frame}{Legközelebbi szomszéd meghatározása}
+\begin{frame}{Legközelebbi pontpár megtalálásának hatékonysága}
+\begin{itemize}
+	\item A pontok $x$ és $y$ koordináta szerinti előrendezésével kezdünk $O(n 
+	\log{n})$
+	\item A rekurzív lépés során $T(n) = 2*T(\frac{n}{2})+O(n)$ művelet
+	\begin{itemize}
+		\item Előrendezés nélkül a rekurzív lépés $T(n) = 
+		2*T(\frac{n}{2})+O(n \log{n})$ műveletigényű lenne, a teljes eljárás 
+		mester módszerrel kapott műveletigénye pedig $O(n \log^2{n})$-re nőne
+	\end{itemize}
+	\item Az eljárás több szempontból is hasonlít az összefésülő rendezés 
+	működéséhez
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Legközelebbi szomszéd(ok) meghatározása}
 \begin{block}{Probléma}
-	Adott ponthoz találjuk meg a hozzá legközelebb eső pontot
+	Adott ponthoz találjuk meg a hozzá legközelebb eső ponto(ka)t
 \end{block}
+
+\begin{columns}
+	\begin{column}{.6\linewidth}
 \begin{block}{Felhasználása}
-	k-legközelebbi osztályozó, klaszterező eljárások
+	Gépi tanulás: k-legközelebbi osztályozó, klaszterező 
+	eljárások
 \end{block}
+	\end{column}
+\begin{column}{.3\linewidth}
+	\vskip .5cm
+	\includegraphics[width=\linewidth]{KnnClassification}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{k-d fák hatékonysága}
 \begin{block}{k-d fák}
 	$n$ pont esetén a k-d fák fő műveletei átlagos esetben $O(n \log n)$ 
 	műveletigényűek
 \end{block}
+
+\begin{itemize}
+	\item Hatékonysága \href{http://w8r.name/k-d-tree/example/}{statikus 
+	ponthalmaz} esetén garantált
+	\item Egy k-d fa módosítása (beszúrás/törlés) a kiegyensúlyozottságának 
+	megtartása mellett nem triviális
+\end{itemize}
 \end{frame}
-\end{comment}
+
+\begin{frame}{k-d fák illusztrációja}
+\begin{itemize}
+	\item A fa minden szintje a pontok váltakozó koordináták mentén történő 
+	megfelezését szolgálják
+	\begin{itemize}
+		\item A fa egy csúcsa ossza ketté a részfában található pontokat az 
+		adott szintre vonatkozó dimenzió mentén
+		\item A fa kiegyensúlyozott lesz, mivel a részfák 
+		olyan féltereket definiálnak, amelyeket a mediánok mentén hozunk létre
+	\end{itemize}
+\end{itemize}
+\begin{columns}
+	\begin{column}{.55\linewidth}
+		\includegraphics[width=\linewidth]{kd_Tree}
+	\end{column}
+	\begin{column}{.4\linewidth}
+		\includegraphics[width=\linewidth]{Kdtree_2d}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{k-d fában való keresés}
+\begin{itemize}
+	\item Keressük meg azt a félteret, ahova a lekérdezett pont esik
+	\item A már megtalált legkisebb távolság alapján sok részfa vizsgálata 
+	kiküszöbölhető
+\end{itemize}
+\end{frame}
 
 \begin{frame}{Összefoglalás}
 \begin{itemize}
