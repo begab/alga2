@@ -11,13 +11,20 @@
 \usepackage[T1]{fontenc}
 \usepackage{beamerthemesplit}
 \usepackage{pgf,pgffor,pgfplots}
-\pgfplotsset{compat=1.15}
+%\pgfplotsset{compat=1.15}
 \usepackage{subfig}
 \usepackage{xcolor}
+
+\usepackage{listings}
 \usepackage{nccfoots}
 \newcommand{\framenote}[1]{%
 	\Footnotetext{}{\emph{#1}}% Print footnote text
 }
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
@@ -32,31 +39,31 @@
 \newcount\bt@rangeb
 
 \newcommand\btIfInRange[2]{%
-    \global\let\bt@inrange\@secondoftwo%
-    \edef\bt@rangelist{#2}%
-    \foreach \range in \bt@rangelist {%
-        \afterassignment\bt@getrangeb%
-        \bt@rangea=0\range\relax%
-        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
-        }%
-        \ifnum\result=1\relax%
-            \breakforeach%
-            \global\let\bt@inrange\@firstoftwo%
-        \fi%
-    }%
-    \bt@inrange%
+	\global\let\bt@inrange\@secondoftwo%
+	\edef\bt@rangelist{#2}%
+	\foreach \range in \bt@rangelist {%
+		\afterassignment\bt@getrangeb%
+		\bt@rangea=0\range\relax%
+		\pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) 
+		}%
+		\ifnum\result=1\relax%
+		\breakforeach%
+		\global\let\bt@inrange\@firstoftwo%
+		\fi%
+	}%
+	\bt@inrange%
 }
 \newcommand\bt@getrangeb{%
-    \@ifnextchar\relax%
-        {\bt@rangeb=\bt@rangea}%
-        {\@getrangeb}%
+	\@ifnextchar\relax%
+	{\bt@rangeb=\bt@rangea}%
+	{\@getrangeb}%
 }
 \def\@getrangeb-#1\relax{%
-    \ifx\relax#1\relax%
-        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
-    \else%
-        \bt@rangeb=#1\relax%
-    \fi%
+	\ifx\relax#1\relax%
+	\bt@rangeb=100000%   \maxdimen is too large for pgfmath
+	\else%
+	\bt@rangeb=#1\relax%
+	\fi%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,7 +74,7 @@
 %overlay spec match.
 % 
 \newcommand<>{\btLstHL}[1]{%
-  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+	\only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
 }%
 \makeatother
 
