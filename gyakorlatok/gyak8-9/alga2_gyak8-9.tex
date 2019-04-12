@@ -227,10 +227,36 @@ A szakaszokat tartalmazó kiegyensúlyozott (itt most AVL\footnote{Hf.:piros-fek
 \end{enumerate}
 
 \noindent 4. Határozzuk meg a (1,2), (1,4), (3,3), (4,6), (5,0), (5,3), (5,5), 
-(7,5) pontok konvex burkát Graham-féle pásztázással!
+(7,5) pontok konvex burkát Graham-féle pásztázással, illetve Jarvis 
+meneteléssel!
 
-1. lépés: csúcsok polárszög szerinti rendezése: A,E,F,C,H,G,D,B.
-2. lépés: a konvex burok csúcsit nyilvántartó verem fenntartása.
+\paragraph{Graham-féle pásztázás}\mbox{}\\
+
+\noindent I. lépés: csúcsok polárszög szerinti rendezése: A,E,F,C,H,G,D,B. \\
+II. lépés: a konvex burok csúcsait nyilvántartó verem fenntartása.
+\begin{enumerate}
+\item S\textsubscript{0}=[A,E,F] (ekkor még nem kell forgásirányt számoljunk)
+\item {\scshape{ForgásIrány(E,F,C)}} S\textsubscript{1}=[A,E,F,C]
+\item {\scshape{ForgásIrány(F,C,H)}}, {\scshape{ForgásIrány(E,F,H)}}, 
+{\scshape{ForgásIrány(A,E,H)}} S\textsubscript{2}=[A,E,H]
+\item {\scshape{ForgásIrány(E,H,G)}} S\textsubscript{3}=[A,E,H,G]
+\item {\scshape{ForgásIrány(H,G,D)}}, {\scshape{ForgásIrány(E,H,D)}} 
+S\textsubscript{4}=[A,E,H,D]
+\item {\scshape{ForgásIrány(H,D,B)}} S\textsubscript{5}=[A,E,H,D,B]
+\end{enumerate}
+
+\paragraph{Jarvis menetelés}\mbox{}\\
+
+\noindent I. lépés: legyen $P$ a legbaloldalibb x-koordinátájú pont (a 
+pontok $O(n\log{n})$-es rendezésére nincs szükség) \\
+II. lépés: amíg vissza nem érünk az elsőnek kiválasztott pontba
+
+válasszuk ki azt a $Q$ pontot, amelyre {\scshape{Forgásirány(P,R,Q)}}<0 minden 
+R-re
+
+Adjuk hozzá $Q$-t a konvex burokhoz
+
+P=Q
 
 \begin{tikzpicture}
 \tkzInit[xmax=7,ymin=0,ymax=6,xmin=0,ymin=0]
