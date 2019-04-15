@@ -885,7 +885,7 @@ kell legyen
 \begin{frame}{k-d fák illusztrációja}
 \begin{itemize}
 	\item A fa minden szintje a pontok váltakozó koordináták mentén történő 
-	megfelezését szolgálják
+	megfelezését szolgálják (egyéb stratégiák is léteznek)
 	\begin{itemize}
 		\item A fa egy csúcsa ossza ketté a részfában található pontokat az 
 		adott szintre vonatkozó dimenzió mentén
@@ -905,16 +905,23 @@ kell legyen
 
 \begin{frame}{k-d fában való keresés}
 \begin{itemize}
-	\item Keressük meg azt a félteret, ahova a lekérdezett pont esik
-	\item A már megtalált legkisebb távolság alapján sok részfa vizsgálata 
-	kiküszöbölhető
+	\item Keressük meg azt a régiót, ahova a lekérdezett pont esik
+	\item Nem garantált, hogy a legközelebbi pont ebben a régióban lesz
+	\begin{itemize}
+	\item<2> Viszont az azon belüli legkisebb távolság alapján sok régió 
+	esélytelenné válik a legközelebbi pont tartalmazására nézve
+	\end{itemize}
 \end{itemize}
+\centering
+\includegraphics[width=.4\linewidth]{kdtree_uniform_median}
 \end{frame}
 
 \begin{frame}{Összefoglalás}
 \begin{itemize}
-	\item A geometriai algoritmusok számos gyakorlati probléma megoldása során 
-	felmerülnek
+	\item A geometriai algoritmusok számos gyakorlati probléma (pl.~gépi 
+	tanulás) megoldása során felmerülnek
+	\item A numerikus hibák (egy része) kiküszöbölhető {\scshape{ForgásIrány}} 
+	használatával
 	\item Nagy méretű inputok esetén fontos, hogy a négyzetes (vagy annál is 
 	rosszabb) futási idejű algoritmusoknál hatékonyabbakat használjunk
 \end{itemize}
