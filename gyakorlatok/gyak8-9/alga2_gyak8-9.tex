@@ -251,12 +251,35 @@ S\textsubscript{4}=[A,E,H,D]
 pontok $O(n\log{n})$-es rendezésére nincs szükség) \\
 II. lépés: amíg vissza nem érünk az elsőnek kiválasztott pontba
 
-válasszuk ki azt a $Q$ pontot, amelyre {\scshape{Forgásirány(P,R,Q)}}<0 minden 
+válasszuk ki azt a $Q$ pontot, amelyre {\scshape{Forgásirány(P,R,Q)}}>0 minden 
 R-re
 
 Adjuk hozzá $Q$-t a konvex burokhoz
 
 P=Q
+
+\begin{table}[b]
+\begin{tabular}{ccccc}
+1. iteráció & 2. iteráció & 3. iteráció & 4. iteráció & 5. iteráció \\ \hline
+FI(A,A,B)=0  & FI(B,A,C)=4 & FI(D,A,E)=22 & FI(H,A,A)=0 & 
+\textbf{FI(E,A,F)=-12} \\
+FI(A,B,B)=0  & FI(B,B,C)=0 & FI(D,B,E)=20 & FI(H,B,A)=12 & FI(E, B, A)=8 \\
+FI(A,C,B)=4  & FI(B,C,C)=0 & FI(D,C,E)=9 & FI(H,C,A)=0 & FI(E, C, A)=8 \\
+FI(A,D,B)=6  & \textbf{FI(B,D,C)=-7} & FI(D,D,E)=0 & FI(H,D,A)=15 & FI(E, D, 
+A)=22 \\
+FI(A,E,B)=8  & FI(B,E,D)=20 & FI(D,E,E)=0 & \textbf{FI(H,E,A)=-24} & FI(E, E, 
+A)=0 \\
+FI(A,F,B)=8  & FI(B,F,D)=11 & \textbf{FI(D,F,E)=-3} & FI(H,F,E)=6 & FI(E, F, 
+A)=12 \\
+FI(A,G,B)=8  & FI(B,G,D)=5 & \textbf{FI(D,G,F)=-2} & FI(H,G,E)=10 & FI(E, G, 
+A)=20 \\
+FI(A,H,B)=12 & FI(B,H,D)=9 & \textbf{FI(D,H,G)=-2} & FI(H,H,E)=0 & FI(E, H, 
+A)=24 \\ 
+\hline
+$B\in CH$ & $D \in CH$ & $H \in CH$ & $E \in CH$ & $A \in CH$ \\
+\end{tabular}
+\caption{Jarvis menetelése során kiszámított forgásirányok}
+\end{table}
 
 \begin{tikzpicture}
 \tkzInit[xmax=7,ymin=0,ymax=6,xmin=0,ymin=0]
