@@ -306,7 +306,7 @@ s_{i+1}}_{\pi[i+1] = 4}$
       i = P[q]
     if P[i+1] = P[q]
       i = i+1
-    \(\pi[q]=i\)
+    \(\pi\)[q]=i
   \}
   return \(\pi\)
 \} 
@@ -387,6 +387,31 @@ $P=31415, h_q(x) = x \mod 13$
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Bloom filterek tévesztési arányának elemzése}
+\begin{itemize}
+	\item Egy bloom filter olyan arányban ad egy elem tartalmazására nézve 
+	igenlő választ, mint amennyi bitje egyesre lett állítva a beszúrások 
+	hatására
+	\begin{itemize}
+		\item Feltesszük, hogy az alkalmazott $h$ hasítófüggvény jól szór, 
+		azaz $m$ ekvivalenciaosztályba való sorolás esetén az objektumok
+		közelítőleg $\frac{1}{m}$ részét sorolja az összes osztályba
+	\end{itemize}
+	\begin{block}{Hány bitje lesz egy $m$ hosszú bloom filternek 1-es $n$ 
+	beszúrás után?}
+1 beszúrás során $\frac{1}{m}$ valószínűséggel töltünk föl egy bitet \\
+1 beszúrás során $1-\frac{1}{m}$ valószínűséggel \textit{nem} töltünk föl egy 
+bitet \\
+$n$ beszúrás során $\Big(1-\frac{1}{m}\Big)^n$ valószínűséggel \textit{nem} 
+töltünk föl egy bitet \\ \pause
+$\Big(1-\frac{1}{m}\Big)^n=\Big[\Big(1-\frac{1}{m}\Big)^m\Big]^\frac{n}{m} 
+\approx e^{-\frac{n}{m}}$ (nagy $m$ esetén)\\
+$n$ beszúrást követően $1-e^{-\frac{n}{m}}$ valószínűséggel lesz a bloom filter 
+valamely bitje 1-esre állítva \\ 
+	\end{block}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Mintaillesztés főbb megközelítései}
 \begin{table}
 	\centering
@@ -401,7 +426,8 @@ $P=31415, h_q(x) = x \mod 13$
 \end{table}
 
 \begin{itemize}
-	\item Rabin-Karp a nyers erő módszerének kiterjesztéseként tekinthető
+	\item Rabin-Karp a nyers erő módszerének heurisztikus kiterjesztéseként 
+	tekinthető
 	\item KMP pedig a véges automatákkal való illesztés egy hatékonyabb verziója
 \end{itemize}	
 \end{frame}
