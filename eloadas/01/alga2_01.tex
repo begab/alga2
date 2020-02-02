@@ -60,21 +60,25 @@
 
 \begin{frame}{Gyakorlati követelmények}
 	\begin{itemize}
-		\item 2 db ZH (márc.~18. és máj.~6.): 40-40 pont (min.~16 pont/ZH)
+		\item 2 db ZH (márc.~9. és ápr.~27.): 30-30 pont (min.~10 pont/ZH)
 		\item Kvízek: 4 darab 5-5 pontos Coospace kvíz (min.~2 pont/kvíz)
-		\item Pluszpontok (minimumba nem számítanak bele)
-		\item Javítás: a rosszabbul sikerült ZH javítható az utolsó előadáson
+		\item Pluszpontok: ha a gyakorlati jegy legalább elégséges, akkor 
+		pluszpontottal max.~1 jegyet lehet javítani
+		\item Javítás: a két ZH-ból az egyik (alapértelmezés szerint a 
+		rosszabbik) javítható
 	\end{itemize}
 	\pause
+	Amennyiben a részteljesítésenkénti minimumok megvannak, úgy a gyakorlati 
+	jegyek a következők szerint alakulnak
 	\begin{table}
 	\centering
-	\begin{tabular}{r@{}r@{ }l|l}
+	\begin{tabular}{r@{}r@{ }ll}
 		\multicolumn{4}{c}{Gyakorlati jegy} \\ \hline
-		{[}&0--51)  & pont & elégtelen (1) \\
-		{[}&51--66) & pont & elégséges (2) \\
-		{[}&66--76) & pont & közepes (3) \\
-		{[}&76--86) & pont & jó (4) \\
-		{[}&86--$\infty$) & pont & jeles (5)
+		{[}&0--40)  & pont & elégtelen (1) \\
+		{[}&40--50) & pont & elégséges (2) \\
+		{[}&50--60) & pont & közepes (3) \\
+		{[}&60--70) & pont & jó (4) \\
+		{[}&71--$\infty$) & pont & jeles (5)
 	\end{tabular}
     \end{table}
 \end{frame}
@@ -85,11 +89,14 @@
 		a gyakorlati teljesítés részét képezik)
 %		\item Közzététel: \textcolor{red}{febr.~26., márc.~19}, 
 %\textcolor{blue}{ápr.~16, ápr.~30}
-		\item Beadási határidő: \textcolor{red}{márc.~15.}, 
-		\textcolor{blue}{máj.~3.} 23:59:59ig
+		\item Az első két kvíz 2 kvíz 
+		\href{https://tinyurl.com/ts359zz}{márc.~8. 23:55}-ig, a 3. 
+		és 4. kvízek \href{https://tinyurl.com/rkxjuth}{ápr.~26. 23:55}-ig 
+		tölthetők ki
 		\item 3 kitöltés/kvíz, amelyek közül a legjobbat vesszük figyelembe
 		\pause
-		\item Tesztenként a 10 leggyorsabb hibátlan kitöltőnek pluszpont jár
+		\item A teszteket a kiélesedésüket követő nap végéig hibátlatul 
+		kitöltők pluszpontot kapnak
 	\end{itemize}
 \end{frame}
 
@@ -104,7 +111,7 @@
 	\pause	
 		\begin{table}
 		\centering
-		\begin{tabular}{r@{}r@{ }l|l}
+		\begin{tabular}{r@{}r@{ }ll}
 			\multicolumn{4}{c}{Kollokviumi jegy} \\ \hline
 			{[}&0--20)  & pont & elégtelen (1) \\
 			{[}&20--25) & pont & elégséges (2) \\
@@ -164,7 +171,11 @@
 	\centering
 	\includegraphics{Omega_fn}
 \end{figure}
-	\url{https://www.desmos.com/calculator/t8paytwq1w}
+Létezik egy olyan küszöbérték $n_0$, amihez meg tudunk adni egy $k>0$ 
+konstanst, hogy a futási idő minden $n>n_0$ esetén legalább $k \cdot f(n)$ \\
+Jelölés: $T(n) = \Omega(f(n))$ vagy másképp $T(n) \in \Omega(f(n))$
+\pause Értelmezés: $T(n)$ "kellően nagy" inputra "érdemben" meghaladja $f(n)$-t
+%	\url{https://www.desmos.com/calculator/t8paytwq1w}
 \end{frame}
 
 \begin{frame}{Ismétlés --- Aszimptotikus jelölések: $\Theta$}
@@ -186,6 +197,28 @@
 		Hatékony-e az az algoritmus, amelyik futási ideje $n$ méretű inputra \textit{legalább} $O(n \log n)$? \\
 		\only<2>{Másképp szólva, mit tudunk arról az algoritmusról, amelynek futási ideje $\Omega(1)$?}
 	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ismétlés -- Függvények növekedési üteme}
+\begin{alertblock}{}	
+	3 algoritmusunk van, amelyek az $n$ méretű inputjuk függvényében 
+	$O(log(n^2))$, $O(log(n)^2)$ és $O(log(n))$ futási idővel rendelkeznek. 
+	Mi mondható el az algoritmusok hatékonyságáról? \\
+	\only<2->{(Hint: $log(a * b) = log(a) + log(b)$)}
+\end{alertblock}
+\begin{figure}
+\subfloat{
+	\includegraphics[width=.33\linewidth]{growth_5}
+}
+\pause
+\subfloat{
+	\includegraphics[width=.33\linewidth]{growth_50}
+}
+\pause
+\subfloat{
+	\includegraphics[width=.33\linewidth]{growth_5000}
+}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Bináris fa implementációja}
