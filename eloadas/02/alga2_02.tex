@@ -13,7 +13,29 @@
 \pgfplotsset{compat=1.15}
 \usepackage{subfig}
 \usepackage{listings}
+
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
 \usepackage{lstlinebgrd}
+\makeatletter
+\let\lstKV@SwitchCases\old@lstKV@SwitchCases
+
+\lst@Key{numbers}{none}{%
+	\def\lst@PlaceNumber{\lst@linebgrd}%
+	\lstKV@SwitchCases{#1}%
+	{none:\\%
+		left:\def\lst@PlaceNumber{\llap{\normalfont
+				\lst@numberstyle{\thelstnumber}\kern\lst@numbersep}\lst@linebgrd}\\%
+		right:\def\lst@PlaceNumber{\rlap{\normalfont
+				\kern\linewidth \kern\lst@numbersep
+				\lst@numberstyle{\thelstnumber}}\lst@linebgrd}%
+	}{\PackageError{Listings}{Numbers #1 unknown}\@ehc}}
+\makeatother
+
+
+
 \usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
 \AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}
 \makeatletter
@@ -195,6 +217,7 @@ class Node {
 		\begin{column}{.6\linewidth}
 \begin{alltt}
 {\scshape RangKeres}(x, i) \{
+   // x gyökerű részfában keresi az i rangú csúcsot
    r = x.bal.kiegeszito + 1
 
    if (i < r) \{
