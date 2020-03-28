@@ -495,10 +495,31 @@ $y$-koordinátája nagyobb $s_2$ $y$-koordinátájánál adott $x$-koordináta m
 	\item Agglomeratív klaszterezés: gépi tanuló eljárás, melynek célja 
 	vektorokkal leírt megfigyelések homogén részsokaságainak kialakítása
 \end{itemize}
-\includegraphics[width=\linewidth]{clustergram}
+\includegraphics[width=.4\linewidth]{hierarchic_colored} \hfill
+\begin{tikzpicture}[sloped,scale=0.6,font=\footnotesize]
+\node[circle,fill=green!40] (a) at (-6,0) {A};
+\node[circle,fill=green!40] (b) at (-4,0) {B};
+\node[circle,fill=orange!40] (c) at (-2,0) {C};
+\node[circle,fill=blue!40] (d) at (0,0) {D};
+\node[circle,fill=blue!40] (e) at (2,0) {E};
+\node (ab) at (-5,1.3) {};
+\node (de) at (1,0.75) {};
+\node (abc) at (-3.5,2.7) {};
+\node (all) at (-1.5,5.46) {};
+
+\draw[dashed, red, thick] (-6,2) -- (2,2);
+
+\draw  (a) |- (ab.center);
+\draw  (b) |- (ab.center);
+\draw  (d) |- (de.center);
+\draw  (e) |- (de.center);
+\draw  (c) |- (abc.center);
+\draw  (ab.center) |- (abc.center);
+\draw  (abc.center) |- (all.center);
+\draw  (de.center) |- (all.center);
+\draw[->,] (-7,0) -- node[above]{távolság} (-7,6);
+\end{tikzpicture}
 \end{frame}
-
-
 
 
 \begin{frame}{Konvex burok meghatározásának elvi algoritmusa}
