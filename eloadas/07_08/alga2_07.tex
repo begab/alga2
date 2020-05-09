@@ -436,6 +436,7 @@ $y$-koordinátája nagyobb $s_2$ $y$-koordinátájánál adott $x$-koordináta m
 
 \begin{frame}[fragile]{Metsző szakaszpár keresése}
 \begin{alltt}
+	\small
 {\scshape{Van-E-Metsző-Szakaszpár}}(S) \{ // T az állapotleírás fája
   L = S-beli szakaszvégpontok rendezett listája
   for p in L
@@ -451,6 +452,7 @@ $y$-koordinátája nagyobb $s_2$ $y$-koordinátájánál adott $x$-koordináta m
         return {\scshape{Igaz}}
       \}
       {\scshape{Töröl}}(T,s)
+    \}
   return {\scshape{Hamis}}
 \}
 \end{alltt}
