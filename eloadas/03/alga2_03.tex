@@ -591,8 +591,9 @@ class Node {
 		\item Itt is megelőzővel helyettesítünk
 		\item Két eset lehetséges
 		\begin{enumerate}
-			\item Szomszédtól kölcsönzünk, ha annak van feleslege ($>t$ méretű)
-			\item Összeolvasztjuk a kritikusan kicsi csúcsot a $t$ méretű szomszédjával $\Rightarrow t+(t-1)+1=2t$ méretű csúcs jön létre
+			\item Testvértől kölcsönzünk, ha annak van feleslege ($>t$ méretű)
+			\item Összeolvasztjuk a kritikusan kicsi csúcsot a $t$ méretű 
+			testvérével $\Rightarrow t+(t-1)+1=2t$ méretű csúcs jön létre
 		\end{enumerate}
 		\item A kölcsönvételt preferáljuk, hiszen az $O(1)$ időben elvégezhető
 	\end{itemize}
